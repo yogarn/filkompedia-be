@@ -1,6 +1,6 @@
 package entity
 
 type Role struct {
-	Id   int
-	Role string
+	Id   int    `db:"id"`
+	Role string `db:"role"`
 }

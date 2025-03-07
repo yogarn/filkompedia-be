@@ -17,6 +17,11 @@ func NewRest(router *fiber.App, service *service.Service) *Rest {
 	}
 }
 
+func mountAuth(routerGroup fiber.Router, r *Rest) {
+	auths := routerGroup.Group("/auths")
+	auths.Post("/register", r.Register)
+}
+
 func mountUser(routerGroup fiber.Router, r *Rest) {
 	users := routerGroup.Group("/users")
 	users.Get("/", r.GetAllUserProfile)
@@ -31,6 +36,7 @@ func (r *Rest) RegisterRoutes() {
 	})
 
 	mountUser(routerGroup, r)
+	mountAuth(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

@@ -11,6 +11,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/handler/rest"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/internal/service"
+	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 )
 
 type Config struct {
@@ -25,8 +26,10 @@ func LoadEnv() {
 }
 
 func StartUp(config *Config) {
+	bcrypt := bcrypt.Init()
+
 	repository := repository.NewRepository(config.DB)
-	service := service.NewService(repository)
+	service := service.NewService(repository, bcrypt)
 
 	rest := rest.NewRest(config.App, service)
 	rest.RegisterRoutes()

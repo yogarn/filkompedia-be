@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -10,7 +11,9 @@ import (
 
 func StartFiber() *fiber.App {
 	app := fiber.New(
-		fiber.Config{},
+		fiber.Config{
+			ErrorHandler: CustomErrorHandler,
+		},
 	)
 
 	app.Use(cors.New(cors.Config{
@@ -26,6 +29,8 @@ func StartFiber() *fiber.App {
 func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	message := "Internal Server Error"
+
+	fmt.Print(err.Error())
 
 	var errorRequest *response.ErrorResponse
 	if errors.As(err, &errorRequest) {

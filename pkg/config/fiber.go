@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/yogarn/filkompedia-be/pkg/config/response"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 func StartFiber() *fiber.App {

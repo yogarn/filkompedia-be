@@ -4,18 +4,20 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 func (r *Rest) GetUserProfile(ctx *fiber.Ctx) (err error) {
-	var profileReq model.ProfileReq
-	if err := ctx.BodyParser(&profileReq); err != nil {
+	param := ctx.Params("userId")
+	userId, err := uuid.Parse(param)
+	if err != nil {
 		return err
 	}
 
 	var profile model.Profile
-	if err := r.service.UserService.GetProfile(&profile, profileReq); err != nil {
+	if err := r.service.UserService.GetProfile(&profile, userId); err != nil {
 		return err
 	}
 

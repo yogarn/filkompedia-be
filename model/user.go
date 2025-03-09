@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 )
 
@@ -9,10 +8,6 @@ type RegisterReq struct {
 	Username string `json:"username" db:"username"`
 	Email    string `json:"email" db:"email"`
 	Password string `json:"password" db:"password"`
-}
-
-type ProfileReq struct {
-	Id uuid.UUID `json:"id" db:"id"`
 }
 
 type ProfilesReq struct {

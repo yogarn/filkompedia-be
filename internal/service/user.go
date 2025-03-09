@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
@@ -8,7 +9,7 @@ import (
 
 type IUserService interface {
 	GetProfiles(profiles *[]model.Profile, profilesReq model.ProfilesReq) error
-	GetProfile(profile *model.Profile, profileReq model.ProfileReq) error
+	GetProfile(profile *model.Profile, userId uuid.UUID) error
 }
 
 type UserService struct {
@@ -35,9 +36,9 @@ func (s *UserService) GetProfiles(profiles *[]model.Profile, profilesReq model.P
 	return nil
 }
 
-func (s *UserService) GetProfile(profile *model.Profile, profileReq model.ProfileReq) error {
+func (s *UserService) GetProfile(profile *model.Profile, userId uuid.UUID) error {
 	var user entity.User
-	if err := s.UserRepository.GetUser(&user, profileReq.Id); err != nil {
+	if err := s.UserRepository.GetUser(&user, userId); err != nil {
 		return err
 	}
 

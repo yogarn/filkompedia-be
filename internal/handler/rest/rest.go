@@ -28,6 +28,12 @@ func mountUser(routerGroup fiber.Router, r *Rest) {
 	users.Get("/:userId", r.GetUserProfile)
 }
 
+func mountBook(routerGroup fiber.Router, r *Rest) {
+	books := routerGroup.Group("/books")
+	books.Get("/", r.GetBooks)
+	books.Get("/search", r.SearchBooks)
+}
+
 func (r *Rest) RegisterRoutes() {
 	routerGroup := r.router.Group("/api/v1")
 
@@ -37,6 +43,7 @@ func (r *Rest) RegisterRoutes() {
 
 	mountUser(routerGroup, r)
 	mountAuth(routerGroup, r)
+	mountBook(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

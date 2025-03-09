@@ -8,11 +8,13 @@ import (
 type Service struct {
 	UserService IUserService
 	AuthService IAuthService
+	BookService IBookService
 }
 
 func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt) *Service {
 	return &Service{
 		UserService: NewUserService(repository),
 		AuthService: NewAuthService(repository.AuthRepository, bcrypt),
+		BookService: NewBookService(repository.BookRepository),
 	}
 }

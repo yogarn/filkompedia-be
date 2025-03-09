@@ -13,7 +13,7 @@ type Service struct {
 
 func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt) *Service {
 	return &Service{
-		UserService: NewUserService(repository),
+		UserService: NewUserService(repository.UserRepository),
 		AuthService: NewAuthService(repository.AuthRepository, bcrypt),
 		BookService: NewBookService(repository.BookRepository),
 	}

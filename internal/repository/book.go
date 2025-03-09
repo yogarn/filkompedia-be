@@ -28,7 +28,7 @@ func (r *BookRepository) GetBooks(books *[]entity.Book, page, pageSize int) erro
 	offset := (page - 1) * pageSize
 
 	query := `SELECT * FROM books ORDER BY release_date DESC LIMIT $1 OFFSET $2`
-	err := r.db.Select(&books, query, pageSize, offset)
+	err := r.db.Select(books, query, pageSize, offset)
 	return err
 }
 
@@ -54,6 +54,6 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 
 	searchPattern := "%" + searchQuery + "%"
 
-	err := r.db.Select(&books, query, searchPattern, pageSize, offset)
+	err := r.db.Select(books, query, searchPattern, pageSize, offset)
 	return err
 }

@@ -19,6 +19,7 @@ CREATE TABLE sessions (
     user_id varchar(36),
     token varchar(255),
     ip_address varchar(16),
+    expires_at timestamp,
     user_agent varchar(255),
     device_id varchar(255), 
     FOREIGN KEY (user_id) REFERENCES users(id)

@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
 )
@@ -8,6 +9,7 @@ import (
 type IBookRepository interface {
 	GetBooks(books *[]entity.Book, page, pageSize int) error
 	SearchBooks(books *[]entity.Book, page, pageSize int, searchQuery string) error
+	GetBook(book *entity.Book, bookId uuid.UUID) error
 }
 
 type BookRepository struct {
@@ -55,5 +57,11 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 	searchPattern := "%" + searchQuery + "%"
 
 	err := r.db.Select(books, query, searchPattern, pageSize, offset)
+	return err
+}
+
+func (r *BookRepository) GetBook(book *entity.Book, bookId uuid.UUID) error {
+	query := `SELECT TOP 1 FROM books WHERE book_id = $1`
+	err := r.db.Select(book, query, bookId)
 	return err
 }

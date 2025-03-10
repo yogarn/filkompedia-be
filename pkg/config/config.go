@@ -12,6 +12,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/internal/service"
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
+	"github.com/yogarn/filkompedia-be/pkg/jwt"
 )
 
 type Config struct {
@@ -27,9 +28,10 @@ func LoadEnv() {
 
 func StartUp(config *Config) {
 	bcrypt := bcrypt.Init()
+	jwt := jwt.Init()
 
 	repository := repository.NewRepository(config.DB)
-	service := service.NewService(repository, bcrypt)
+	service := service.NewService(repository, bcrypt, jwt)
 
 	rest := rest.NewRest(config.App, service)
 	rest.RegisterRoutes()

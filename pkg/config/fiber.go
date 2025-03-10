@@ -35,7 +35,7 @@ func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
 	var errorRequest *response.ErrorResponse
 	if errors.As(err, &errorRequest) {
 		code = errorRequest.Code
-		message = errorRequest.Message
+		message = errorRequest.Error()
 	}
 
 	var fiberError *fiber.Error

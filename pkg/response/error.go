@@ -6,9 +6,8 @@ import (
 )
 
 type ErrorResponse struct {
-	Message string `json:"message"`
-	Err     error  `json:"error"`
-	Code    int    `json:"code"`
+	Err  error `json:"error"`
+	Code int   `json:"code"`
 }
 
 func (e *ErrorResponse) Error() string {
@@ -24,4 +23,6 @@ func NewErrorResponse(code int, message string) ErrorResponse {
 
 var (
 	InternalServerError = NewErrorResponse(http.StatusInternalServerError, "Internal Server Error")
+
+	UserNotFound = NewErrorResponse(http.StatusNotFound, "User Not Found")
 )

@@ -20,7 +20,7 @@ func (r *Rest) GetBooks(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, books)
+	response.Success(ctx, http.StatusOK, "success", books)
 	return nil
 }
 
@@ -35,6 +35,6 @@ func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, books)
+	response.Success(ctx, http.StatusOK, "success", books)
 	return nil
 }

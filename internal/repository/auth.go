@@ -24,3 +24,7 @@ func (r *AuthRepository) Register(user *entity.User) error {
 	_, err := r.db.Exec(query, user.Id, user.Username, user.Email, user.Password, user.RoleId)
 	return err
 }
+
+func (r *AuthRepository) Login(user *entity.Session) error {
+	return nil
+}

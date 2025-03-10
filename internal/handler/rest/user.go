@@ -21,7 +21,7 @@ func (r *Rest) GetUserProfile(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, profile)
+	response.Success(ctx, http.StatusOK, "success", profile)
 	return nil
 }
 
@@ -36,6 +36,6 @@ func (r *Rest) GetAllUserProfile(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, profiles)
+	response.Success(ctx, http.StatusOK, "success", profiles)
 	return nil
 }

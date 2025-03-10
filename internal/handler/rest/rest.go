@@ -20,6 +20,7 @@ func NewRest(router *fiber.App, service *service.Service) *Rest {
 func mountAuth(routerGroup fiber.Router, r *Rest) {
 	auths := routerGroup.Group("/auths")
 	auths.Post("/register", r.Register)
+	auths.Post("/login", r.Login)
 }
 
 func mountUser(routerGroup fiber.Router, r *Rest) {

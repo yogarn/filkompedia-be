@@ -22,7 +22,9 @@ func NewErrorResponse(code int, message string) ErrorResponse {
 }
 
 var (
-	InternalServerError = NewErrorResponse(http.StatusInternalServerError, "Internal Server Error")
+	InternalServerError = NewErrorResponse(http.StatusInternalServerError, "Internal server error")
 
-	UserNotFound = NewErrorResponse(http.StatusNotFound, "User Not Found")
+	UserNotFound = NewErrorResponse(http.StatusNotFound, "User not found")
+
+	InvalidToken = NewErrorResponse(http.StatusUnauthorized, "Token invalid")
 )

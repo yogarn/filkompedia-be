@@ -2,6 +2,9 @@ package rest
 
 import (
 	"net/http"
+	"os"
+	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogarn/filkompedia-be/model"
@@ -29,11 +32,25 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	token, err := r.service.AuthService.Login(loginReq)
+	loginRes, err := r.service.AuthService.Login(loginReq)
 	if err != nil {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, "success", token)
+	expiresIn, err := strconv.Atoi(os.Getenv("JWT_EXPIRED_TIME"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    loginRes.JwtToken,
+		Expires:  time.Now().Add(time.Duration(expiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/service"
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
+	"github.com/yogarn/filkompedia-be/pkg/middleware"
 )
 
 type Config struct {
@@ -33,7 +34,9 @@ func StartUp(config *Config) {
 	repository := repository.NewRepository(config.DB)
 	service := service.NewService(repository, bcrypt, jwt)
 
-	rest := rest.NewRest(config.App, service)
+	middleware := middleware.Init(jwt, service)
+
+	rest := rest.NewRest(config.App, service, middleware)
 	rest.RegisterRoutes()
 
 	rest.Start(fmt.Sprintf(":%s", os.Getenv("PORT")))

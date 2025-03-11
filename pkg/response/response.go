@@ -19,6 +19,7 @@ func Success(ctx *fiber.Ctx, code int, message string, data interface{}) {
 func Error(ctx *fiber.Ctx, code int, message string, err error) {
 	response := Response{
 		Message: message,
+		Data:    err.Error(),
 	}
 
 	ctx.Status(code).JSON(response)

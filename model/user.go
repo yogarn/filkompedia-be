@@ -4,15 +4,9 @@ import (
 	"github.com/yogarn/filkompedia-be/entity"
 )
 
-type RegisterReq struct {
-	Username string `json:"username" db:"username"`
-	Email    string `json:"email" db:"email"`
-	Password string `json:"password" db:"password"`
-}
-
 type ProfilesReq struct {
-	Page     int `json:"page"`
-	PageSize int `json:"page_size"`
+	Page     int `json:"page" validate:"required"`
+	PageSize int `json:"page_size" validate:"required"`
 }
 
 type Profile struct {

@@ -7,6 +7,7 @@ import (
 
 type IAuthRepository interface {
 	Register(user *entity.User) (err error)
+	Login(session *entity.Session) (err error)
 }
 
 type AuthRepository struct {
@@ -25,6 +26,16 @@ func (r *AuthRepository) Register(user *entity.User) error {
 	return err
 }
 
-func (r *AuthRepository) Login(user *entity.Session) error {
+func (r *AuthRepository) Login(session *entity.Session) error {
+	query := `
+	INSERT INTO sessions (user_id, token, ip_address, expires_at, user_agent, device_id)
+	VALUES (:user_id, :token, :ip_address, :expires_at, :user_agent, :device_id)
+	`
+
+	_, err := r.db.NamedExec(query, session)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

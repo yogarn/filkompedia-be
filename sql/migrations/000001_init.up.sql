@@ -24,12 +24,3 @@ CREATE TABLE sessions (
     device_id varchar(255) UNIQUE, 
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
-
-CREATE TABLE books (
-    id VARCHAR(36) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    release_date DATE NOT NULL,
-    price DECIMAL NOT NULL CHECK(price > 1000)
-);

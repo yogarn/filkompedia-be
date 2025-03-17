@@ -35,7 +35,8 @@ func mountUser(routerGroup fiber.Router, r *Rest) {
 func mountBook(routerGroup fiber.Router, r *Rest) {
 	books := routerGroup.Group("/books")
 	books.Get("/", r.GetBooks)
-	books.Get("/search", r.SearchBooks)
+	books.Get("/books", r.SearchBooks)
+	books.Post("/book", r.CreateBook)
 }
 
 func (r *Rest) RegisterRoutes() {

@@ -1,0 +1,39 @@
+services:
+  postgres:
+    container_name: "postgres"
+    image: postgres:13-alpine
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - filkompedia
+
+  filkompedia_be:
+    container_name: "filkompedia-be"
+    build:
+      context: .
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - filkompedia
+    depends_on:
+      - postgres
+    restart: on-failure
+
+networks:
+  filkompedia:
+    name: filkompedia
+    driver: bridge

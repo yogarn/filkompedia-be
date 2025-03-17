@@ -43,7 +43,15 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	loginRes, err := r.service.AuthService.Login(loginReq)
+	ipAddress := ctx.IP()
+	userAgent := ctx.Get("User-Agent")
+
+	refreshTokenExpiresIn, err := strconv.Atoi(os.Getenv("REFRESH_EXPIRED_TIME"))
+	if err != nil {
+		return err
+	}
+
+	loginRes, err := r.service.AuthService.Login(loginReq, ipAddress, userAgent, refreshTokenExpiresIn)
 	if err != nil {
 		return err
 	}
@@ -57,6 +65,15 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		Name:     "token",
 		Value:    loginRes.JwtToken,
 		Expires:  time.Now().Add(time.Duration(expiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    loginRes.RefreshToken,
+		Expires:  time.Now().Add(time.Duration(refreshTokenExpiresIn) * time.Second),
 		HTTPOnly: true,
 		Secure:   true,
 		Path:     "/",

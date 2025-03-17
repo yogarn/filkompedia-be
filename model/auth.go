@@ -12,5 +12,6 @@ type LoginReq struct {
 }
 
 type LoginRes struct {
-	JwtToken string `json:"jwtToken"`
+	JwtToken     string `json:"jwtToken"`
+	RefreshToken string `json:"refreshToken"`
 }

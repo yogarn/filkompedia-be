@@ -1,6 +1,6 @@
 CREATE TABLE books (
-    book_id VARCHAR(36) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
+    id VARCHAR(36) PRIMARY KEY,
+    title VARCHAR(255) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     author VARCHAR(255) NOT NULL,
     release_date DATE NOT NULL,

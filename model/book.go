@@ -1,9 +1,5 @@
 package model
 
-import (
-	"time"
-)
-
 type BookReq struct {
 	Page     int `json:"page" validate:"required"`
 	PageSize int `json:"page_size" validate:"required"`
@@ -16,9 +12,9 @@ type BookSearch struct {
 }
 
 type CreateBook struct {
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Author      string    `json:"author"`
-	ReleaseDate time.Time `json:"release_date"`
-	Price       float64   `json:"price"`
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Author      string  `json:"author"`
+	ReleaseDate string  `json:"release_date"`
+	Price       float64 `json:"price"`
 }

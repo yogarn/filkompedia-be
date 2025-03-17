@@ -12,6 +12,7 @@ import (
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type IAuthService interface {
@@ -65,7 +66,7 @@ func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgen
 
 	err = s.Bcrypt.CompareAndHashPassword(user.Password, loginReq.Password)
 	if err != nil {
-		return nil, err
+		return nil, &response.InvalidCredentials
 	}
 
 	token, err := s.Jwt.CreateToken(user.Id)

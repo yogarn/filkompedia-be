@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/model"
@@ -12,6 +13,11 @@ import (
 func (r *Rest) GetBooks(ctx *fiber.Ctx) error {
 	var bookReq model.BookReq
 	if err := ctx.BodyParser(&bookReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(bookReq); err != nil {
 		return err
 	}
 
@@ -27,6 +33,11 @@ func (r *Rest) GetBooks(ctx *fiber.Ctx) error {
 func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 	var bookSearch model.BookSearch
 	if err := ctx.BodyParser(&bookSearch); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(bookSearch); err != nil {
 		return err
 	}
 

@@ -2,7 +2,11 @@ package rest
 
 import (
 	"net/http"
+	"os"
+	"strconv"
+	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
@@ -11,6 +15,11 @@ import (
 func (r *Rest) Register(ctx *fiber.Ctx) (err error) {
 	registerReq := &model.RegisterReq{}
 	if err := ctx.BodyParser(registerReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(registerReq); err != nil {
 		return err
 	}
 
@@ -29,11 +38,47 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
-	token, err := r.service.AuthService.Login(loginReq)
+	validate := validator.New()
+	if err := validate.Struct(loginReq); err != nil {
+		return err
+	}
+
+	ipAddress := ctx.IP()
+	userAgent := ctx.Get("User-Agent")
+
+	refreshTokenExpiresIn, err := strconv.Atoi(os.Getenv("REFRESH_EXPIRED_TIME"))
 	if err != nil {
 		return err
 	}
 
-	response.Success(ctx, http.StatusOK, "success", token)
+	loginRes, err := r.service.AuthService.Login(loginReq, ipAddress, userAgent, refreshTokenExpiresIn)
+	if err != nil {
+		return err
+	}
+
+	expiresIn, err := strconv.Atoi(os.Getenv("JWT_EXPIRED_TIME"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    loginRes.JwtToken,
+		Expires:  time.Now().Add(time.Duration(expiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    loginRes.RefreshToken,
+		Expires:  time.Now().Add(time.Duration(refreshTokenExpiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }

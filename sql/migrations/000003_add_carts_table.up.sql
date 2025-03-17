@@ -1,5 +1,5 @@
 CREATE TABLE carts (
-    cart_id VARCHAR(36) PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     user_id varchar(36) NOT NULL,
     book_id VARCHAR(36) NOT NULL,
     amount INTEGER NOT NULL CHECK(amount > 0),

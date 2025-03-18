@@ -18,6 +18,8 @@ import (
 type IAuthService interface {
 	Register(registerReq *model.RegisterReq) (user *entity.User, err error)
 	Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error)
+	GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error)
+	ExchangeToken(token string, expiry int) (jwtToken string, newToken string, err error)
 }
 
 type AuthService struct {
@@ -97,6 +99,59 @@ func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgen
 		JwtToken:     token,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *AuthService) GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error) {
+	sessions, err := s.AuthRepository.GetSessions(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var sessionsRes []model.SessionsRes
+
+	for _, session := range *sessions {
+		sessionsRes = append(sessionsRes, model.SessionsRes{
+			IPAddress: session.IPAddress,
+			ExpiresAt: session.ExpiresAt,
+			UserAgent: session.UserAgent,
+			DeviceId:  session.DeviceId,
+		})
+	}
+
+	return &sessionsRes, nil
+}
+
+func (s *AuthService) ExchangeToken(token string, expiry int) (jwtToken string, newToken string, err error) {
+	currentSession, err := s.AuthRepository.CheckUserSession(token)
+	if err != nil {
+		return "", "", err
+	}
+
+	if time.Now().After(currentSession.ExpiresAt) {
+		err = s.AuthRepository.DeleteToken(currentSession.Token, currentSession.UserId)
+		if err != nil {
+			return "", "", &response.InvalidToken
+		}
+	}
+
+	jwtToken, err = s.Jwt.CreateToken(currentSession.UserId)
+	if err != nil {
+		return "", "", err
+	}
+
+	newToken, err = generateRandomString(32)
+	if err != nil {
+		return "", "", err
+	}
+
+	expiresAt := time.Now().Add(time.Duration(expiry) * time.Second)
+
+	err = s.AuthRepository.ReplaceToken(token, newToken, currentSession.UserId, expiresAt)
+	if err != nil {
+		return "", "", err
+	}
+
+	return jwtToken, newToken, nil
 }
 
 func generateRandomString(length int) (string, error) {

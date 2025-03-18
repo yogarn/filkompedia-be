@@ -31,7 +31,7 @@ func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
 	code := fiber.StatusInternalServerError
 	message := "Internal Server Error"
 
-	fmt.Print(err.Error())
+	fmt.Println(err.Error())
 
 	var errorRequest *response.ErrorResponse
 	if errors.As(err, &errorRequest) {

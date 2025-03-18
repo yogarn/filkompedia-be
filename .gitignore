@@ -28,4 +28,4 @@ go.work.sum
 .vscode/*
 
 # postgres data
-./postgres_data/*
+postgres_data/

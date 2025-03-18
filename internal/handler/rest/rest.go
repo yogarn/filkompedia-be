@@ -24,11 +24,13 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 	auths := routerGroup.Group("/auths")
 	auths.Post("/register", r.Register)
 	auths.Post("/login", r.Login)
+	auths.Get("/sessions", r.middleware.Authenticate, r.GetSessions)
+	auths.Post("/refresh", r.ExchangeToken)
 }
 
 func mountUser(routerGroup fiber.Router, r *Rest) {
 	users := routerGroup.Group("/users")
-	users.Get("/", r.middleware.Authenticate, r.GetAllUserProfile)
+	users.Get("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetAllUserProfile)
 	users.Get("/:userId", r.GetUserProfile)
 }
 
@@ -36,7 +38,7 @@ func mountBook(routerGroup fiber.Router, r *Rest) {
 	books := routerGroup.Group("/books")
 	books.Get("/", r.GetBooks)
 	books.Get("/books", r.SearchBooks)
-	books.Post("/book", r.CreateBook)
+	books.Post("/book", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
 }
 
 func (r *Rest) RegisterRoutes() {

@@ -10,6 +10,7 @@ import (
 type IUserService interface {
 	GetProfiles(profiles *[]model.Profile, profilesReq model.ProfilesReq) error
 	GetProfile(profile *model.Profile, userId uuid.UUID) error
+	GetUserById(user *entity.User, userId uuid.UUID) (err error)
 }
 
 type UserService struct {
@@ -31,6 +32,15 @@ func (s *UserService) GetProfiles(profiles *[]model.Profile, profilesReq model.P
 	*profiles = make([]model.Profile, len(users))
 	for i, user := range users {
 		(*profiles)[i] = model.UserToProfile(user)
+	}
+
+	return nil
+}
+
+func (s *UserService) GetUserById(user *entity.User, userId uuid.UUID) (err error) {
+	err = s.UserRepository.GetUser(user, userId)
+	if err != nil {
+		return err
 	}
 
 	return nil

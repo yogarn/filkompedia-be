@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
@@ -17,8 +18,9 @@ import (
 )
 
 type Config struct {
-	DB  *sqlx.DB
-	App *fiber.App
+	DB    *sqlx.DB
+	Redis *redis.Client
+	App   *fiber.App
 }
 
 func LoadEnv() {

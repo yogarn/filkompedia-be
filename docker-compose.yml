@@ -13,6 +13,20 @@ services:
     networks:
       - filkompedia
 
+  redis:
+    container_name: "redis"
+    image: redis:alpine
+    command: redis-server
+    ports:
+      - "${REDIS_PORT}:6379"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PASSWORD: ${REDIS_PASS}
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - whale_ai
+
   filkompedia_be:
     container_name: "filkompedia-be"
     build:

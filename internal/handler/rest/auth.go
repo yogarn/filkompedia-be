@@ -98,3 +98,46 @@ func (r *Rest) GetSessions(ctx *fiber.Ctx) (err error) {
 	response.Success(ctx, http.StatusOK, "success", sessions)
 	return nil
 }
+
+func (r *Rest) ExchangeToken(ctx *fiber.Ctx) (err error) {
+	token := ctx.Cookies("refresh_token")
+	if token == "" {
+		return &response.InvalidToken
+	}
+
+	refreshTokenExpiresIn, err := strconv.Atoi(os.Getenv("REFRESH_EXPIRED_TIME"))
+	if err != nil {
+		return err
+	}
+
+	jwtToken, newToken, err := r.service.AuthService.ExchangeToken(token, refreshTokenExpiresIn)
+	if err != nil {
+		return err
+	}
+
+	expiresIn, err := strconv.Atoi(os.Getenv("JWT_EXPIRED_TIME"))
+	if err != nil {
+		return err
+	}
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    jwtToken,
+		Expires:  time.Now().Add(time.Duration(expiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    newToken,
+		Expires:  time.Now().Add(time.Duration(refreshTokenExpiresIn) * time.Second),
+		HTTPOnly: true,
+		Secure:   true,
+		Path:     "/",
+	})
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}

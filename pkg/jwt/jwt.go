@@ -8,6 +8,7 @@ import (
 
 	lib_jwt "github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type IJwt interface {
@@ -63,6 +64,9 @@ func (j *jwt) ValidateToken(tokenString string) (uuid.UUID, error) {
 	})
 
 	if err != nil {
+		if errors.Is(err, lib_jwt.ErrTokenExpired) {
+			return userId, &response.ExpiredToken
+		}
 		return userId, err
 	}
 

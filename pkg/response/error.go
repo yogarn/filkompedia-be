@@ -27,6 +27,7 @@ var (
 	UserNotFound = NewErrorResponse(http.StatusNotFound, "User not found")
 
 	InvalidToken       = NewErrorResponse(http.StatusUnauthorized, "Token invalid")
+	ExpiredToken       = NewErrorResponse(http.StatusUnauthorized, "Expired token")
 	InvalidCredentials = NewErrorResponse(http.StatusUnauthorized, "Invalid credentials")
 
 	RoleUnauthorized = NewErrorResponse(http.StatusUnauthorized, "Insufficient role")

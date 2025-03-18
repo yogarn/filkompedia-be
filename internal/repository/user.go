@@ -43,6 +43,9 @@ func (r *UserRepository) GetUsers(users *[]entity.User, page, pageSize int) erro
 func (r *UserRepository) GetUser(user *entity.User, userId uuid.UUID) error {
 	query := `SELECT * FROM users WHERE id = $1`
 	err := r.db.Get(user, query, userId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.UserNotFound
+	}
 	return err
 }
 

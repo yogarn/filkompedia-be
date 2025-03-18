@@ -28,4 +28,6 @@ var (
 
 	InvalidToken       = NewErrorResponse(http.StatusUnauthorized, "Token invalid")
 	InvalidCredentials = NewErrorResponse(http.StatusUnauthorized, "Invalid credentials")
+
+	RoleUnauthorized = NewErrorResponse(http.StatusUnauthorized, "Insufficient role")
 )

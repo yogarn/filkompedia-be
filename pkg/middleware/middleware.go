@@ -8,6 +8,7 @@ import (
 
 type IMiddleware interface {
 	Authenticate(ctx *fiber.Ctx) error
+	Authorize(roles []int) fiber.Handler
 }
 
 type middleware struct {

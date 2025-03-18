@@ -85,9 +85,12 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 }
 
 func (r *Rest) GetSessions(ctx *fiber.Ctx) (err error) {
-	userIdCtx := ctx.Locals("userId")
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.RoleUnauthorized
+	}
 
-	sessions, err := r.service.AuthService.GetSessions(userIdCtx.(uuid.UUID))
+	sessions, err := r.service.AuthService.GetSessions(userId)
 	if err != nil {
 		return err
 	}

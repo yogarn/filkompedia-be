@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"slices"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
@@ -21,10 +23,8 @@ func (m *middleware) Authorize(roles []int) fiber.Handler {
 			return err
 		}
 
-		for _, role := range roles {
-			if user.RoleId == role {
-				return ctx.Next()
-			}
+		if slices.Contains(roles, user.RoleId) {
+			return ctx.Next()
 		}
 
 		return &response.RoleUnauthorized

@@ -9,34 +9,25 @@ import (
 )
 
 type ICartRepository interface {
-	GetUserCart(carts *[]entity.Cart, userId uuid.UUID) error
+	GetUserCart(carts *[]entity.Cart, user *entity.User) error
 	GetCart(cart *entity.Cart, cartId uuid.UUID) error
-	AddToCart(userId uuid.UUID, bookId uuid.UUID, amount int) error
+	AddToCart(user *entity.User, book *entity.Book, amount int) error
 	RemoveFromCart(cartId uuid.UUID) error
 }
 
 type CartRepository struct {
-	db       *sqlx.DB
-	userRepo IUserRepository
-	bookRepo IBookRepository
+	db *sqlx.DB
 }
 
-func NewCartRepositorcleary(db *sqlx.DB, userRepo IUserRepository, bookRepo IBookRepository) ICartRepository {
+func NewCartRepository(db *sqlx.DB) ICartRepository {
 	return &CartRepository{
-		db:       db,
-		userRepo: userRepo,
-		bookRepo: bookRepo, 
+		db: db,
 	}
 }
 
-func (r *CartRepository) GetUserCart(carts *[]entity.Cart, userId uuid.UUID) error {
-	var user entity.User
-	if err := r.userRepo.GetUser(&user, userId); err != nil {
-		return err
-	}
-
+func (r *CartRepository) GetUserCart(carts *[]entity.Cart, user *entity.User) error {
 	query := `SELECT * FROM carts WHERE user_id = $1`
-	err := r.db.Select(carts, query, userId)
+	err := r.db.Select(carts, query, user.Id)
 	return err
 }
 
@@ -46,30 +37,20 @@ func (r *CartRepository) GetCart(cart *entity.Cart, cartId uuid.UUID) error {
 	return err
 }
 
-func (r *CartRepository) AddToCart(userId uuid.UUID, bookId uuid.UUID, amount int) error {
-	var user entity.User
-	if err := r.userRepo.GetUser(&user, userId); err != nil {
-		return err
-	}
-
-	var book entity.Book
-	if err := r.bookRepo.GetBook(&book, bookId); err != nil {
-		return err
-	}
-
+func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount int) error {
 	if amount < 1 {
 		return errors.New("invalid amount")
 	}
 
 	var cart entity.Cart
-	if r.doesCartExist(&cart, userId, bookId); cart.Amount > 0 {
+	if r.doesCartExist(&cart, user.Id, book.Id); cart.Amount > 0 {
 		query := `UPDATE carts SET amount = $1 + $2 WHERE user_id = $3 AND book_id = $4 `
-		_, err := r.db.Exec(query, cart.Amount, amount, userId, bookId)
+		_, err := r.db.Exec(query, cart.Amount, amount, user.Id, book.Id)
 		return err
 	}
 
 	query := `INSERT INTO carts (cart_id, user_id, book_id, amount) VALUES ($1, $2, $3, $4)`
-	_, err := r.db.Exec(query, uuid.New(), userId, bookId, amount)
+	_, err := r.db.Exec(query, uuid.New(), user.Id, book.Id, amount)
 	return err
 }
 

@@ -10,6 +10,7 @@ type Service struct {
 	UserService IUserService
 	AuthService IAuthService
 	BookService IBookService
+	CartService ICartService
 }
 
 func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt) *Service {
@@ -17,5 +18,6 @@ func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jw
 		UserService: NewUserService(repository.UserRepository),
 		AuthService: NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt),
 		BookService: NewBookService(repository.BookRepository),
+		CartService: NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),
 	}
 }

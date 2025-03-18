@@ -1,5 +1,9 @@
 package model
 
+import (
+	"time"
+)
+
 type RegisterReq struct {
 	Username string `json:"username" db:"username" validate:"required,lte=32"`
 	Email    string `json:"email" db:"email" validate:"required,email"`
@@ -14,4 +18,11 @@ type LoginReq struct {
 type LoginRes struct {
 	JwtToken     string `json:"jwtToken"`
 	RefreshToken string `json:"refreshToken"`
+}
+
+type SessionsRes struct {
+	IPAddress string    `json:"ip_address"`
+	ExpiresAt time.Time `json:"expires_at"`
+	UserAgent string    `json:"user_agent"`
+	DeviceId  string    `json:"device_id"`
 }

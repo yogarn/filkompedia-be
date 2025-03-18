@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
@@ -80,5 +81,17 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 	})
 
 	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}
+
+func (r *Rest) GetSessions(ctx *fiber.Ctx) (err error) {
+	userIdCtx := ctx.Locals("userId")
+
+	sessions, err := r.service.AuthService.GetSessions(userIdCtx.(uuid.UUID))
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", sessions)
 	return nil
 }

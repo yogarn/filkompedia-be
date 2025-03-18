@@ -18,6 +18,7 @@ import (
 type IAuthService interface {
 	Register(registerReq *model.RegisterReq) (user *entity.User, err error)
 	Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error)
+	GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error)
 }
 
 type AuthService struct {
@@ -97,6 +98,26 @@ func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgen
 		JwtToken:     token,
 		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (s *AuthService) GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error) {
+	sessions, err := s.AuthRepository.GetSessions(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var sessionsRes []model.SessionsRes
+
+	for _, session := range *sessions {
+		sessionsRes = append(sessionsRes, model.SessionsRes{
+			IPAddress: session.IPAddress,
+			ExpiresAt: session.ExpiresAt,
+			UserAgent: session.UserAgent,
+			DeviceId:  session.DeviceId,
+		})
+	}
+
+	return &sessionsRes, nil
 }
 
 func generateRandomString(length int) (string, error) {

@@ -24,6 +24,7 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 	auths := routerGroup.Group("/auths")
 	auths.Post("/register", r.Register)
 	auths.Post("/login", r.Login)
+	auths.Get("/sessions", r.middleware.Authenticate, r.GetSessions)
 }
 
 func mountUser(routerGroup fiber.Router, r *Rest) {

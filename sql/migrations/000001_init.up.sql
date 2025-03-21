@@ -3,7 +3,8 @@ CREATE TABLE users (
     username varchar(36) NOT NULL UNIQUE,
     email varchar(255) NOT NULL UNIQUE,
     password varchar(60) NOT NULL,
-    role_id integer NOT NULL DEFAULT 0
+    role_id integer NOT NULL DEFAULT 0,
+    is_verified boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE roles (

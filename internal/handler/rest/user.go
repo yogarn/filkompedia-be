@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/model"
@@ -28,6 +29,11 @@ func (r *Rest) GetUserProfile(ctx *fiber.Ctx) (err error) {
 func (r *Rest) GetAllUserProfile(ctx *fiber.Ctx) (err error) {
 	var profilesReq model.ProfilesReq
 	if err := ctx.BodyParser(&profilesReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(profilesReq); err != nil {
 		return err
 	}
 

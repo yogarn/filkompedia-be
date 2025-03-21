@@ -3,17 +3,20 @@ package rest
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogarn/filkompedia-be/internal/service"
+	"github.com/yogarn/filkompedia-be/pkg/middleware"
 )
 
 type Rest struct {
-	router  *fiber.App
-	service *service.Service
+	router     *fiber.App
+	service    *service.Service
+	middleware middleware.IMiddleware
 }
 
-func NewRest(router *fiber.App, service *service.Service) *Rest {
+func NewRest(router *fiber.App, service *service.Service, middleware middleware.IMiddleware) *Rest {
 	return &Rest{
-		router:  router,
-		service: service,
+		router:     router,
+		service:    service,
+		middleware: middleware,
 	}
 }
 
@@ -25,7 +28,7 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 
 func mountUser(routerGroup fiber.Router, r *Rest) {
 	users := routerGroup.Group("/users")
-	users.Get("/", r.GetAllUserProfile)
+	users.Get("/", r.middleware.Authenticate, r.GetAllUserProfile)
 	users.Get("/:userId", r.GetUserProfile)
 }
 

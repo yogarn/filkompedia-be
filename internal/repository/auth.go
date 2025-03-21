@@ -16,6 +16,7 @@ import (
 type IAuthRepository interface {
 	Register(user *entity.User) (err error)
 	StoreOTP(email, otp string) error
+	DeleteOTP(email string) error
 	VerifyOTP(email, inputOtp string) bool
 	VerifyEmail(email string) error
 	Login(session *entity.Session) (err error)
@@ -46,6 +47,10 @@ func (r *AuthRepository) Register(user *entity.User) (err error) {
 func (r *AuthRepository) StoreOTP(email, otp string) error {
 	expiration := 5 * time.Minute // should be in env, but im too lazy
 	return r.rdb.Set(context.Background(), email, otp, expiration).Err()
+}
+
+func (r *AuthRepository) DeleteOTP(email string) error {
+	return r.rdb.Del(context.Background(), email).Err()
 }
 
 func (r *AuthRepository) VerifyOTP(email, inputOtp string) bool {

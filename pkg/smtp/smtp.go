@@ -29,6 +29,6 @@ func LoadSMTPCredentials() *SMTPClient {
 }
 
 func (s *SMTPClient) SendEmail(to, subject, body string) error {
-	message := fmt.Sprintf("Subject: %s\n\n%s", subject, body)
+	message := fmt.Sprintf("To: %s\r\nSubject: %s\r\n\r\n%s", to, subject, body)
 	return smtp.SendMail(s.Address, s.Auth, s.From, []string{to}, []byte(message))
 }

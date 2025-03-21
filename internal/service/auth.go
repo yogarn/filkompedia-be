@@ -70,6 +70,9 @@ func (s *AuthService) Register(registerReq *model.RegisterReq) (user *entity.Use
 }
 
 func (s *AuthService) SendOTP(email string) error {
+	// can not check user verification status
+	// this func might be needed for reset password
+
 	otp := generateOTP()
 	err := s.Smtp.SendEmail(email, "FilkomPedia OTP Verification", "Do not share this code with others. Your OTP code is "+otp)
 	if err != nil {
@@ -90,7 +93,12 @@ func (s *AuthService) VerifyOTP(email, otp string) error {
 		return &response.InvalidOTP
 	}
 
-	err := s.AuthRepository.VerifyEmail(email)
+	err := s.AuthRepository.DeleteOTP(email)
+	if err != nil {
+		return err
+	}
+
+	err = s.AuthRepository.VerifyEmail(email)
 	if err != nil {
 		return err
 	}

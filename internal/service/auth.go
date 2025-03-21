@@ -4,6 +4,9 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/hex"
+	"fmt"
+	"log"
+	"math/big"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,10 +16,13 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
 	"github.com/yogarn/filkompedia-be/pkg/response"
+	"github.com/yogarn/filkompedia-be/pkg/smtp"
 )
 
 type IAuthService interface {
 	Register(registerReq *model.RegisterReq) (user *entity.User, err error)
+	SendOTP(email string) error
+	VerifyOTP(email, otp string) error
 	Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error)
 	GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error)
 	ExchangeToken(token string, expiry int) (jwtToken string, newToken string, err error)
@@ -27,14 +33,16 @@ type AuthService struct {
 	UserRepository repository.IUserRepository
 	Bcrypt         bcrypt.IBcrypt
 	Jwt            jwt.IJwt
+	Smtp           *smtp.SMTPClient
 }
 
-func NewAuthService(authRepository repository.IAuthRepository, userRepository repository.IUserRepository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt) IAuthService {
+func NewAuthService(authRepository repository.IAuthRepository, userRepository repository.IUserRepository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient) IAuthService {
 	return &AuthService{
 		AuthRepository: authRepository,
 		UserRepository: userRepository,
 		Bcrypt:         bcrypt,
 		Jwt:            jwt,
+		Smtp:           smtp,
 	}
 }
 
@@ -45,11 +53,12 @@ func (s *AuthService) Register(registerReq *model.RegisterReq) (user *entity.Use
 	}
 
 	user = &entity.User{
-		Id:       uuid.New(),
-		Username: registerReq.Username,
-		Email:    registerReq.Email,
-		Password: hashedpassword,
-		RoleId:   0,
+		Id:         uuid.New(),
+		Username:   registerReq.Username,
+		Email:      registerReq.Email,
+		Password:   hashedpassword,
+		RoleId:     0,
+		IsVerified: false,
 	}
 
 	err = s.AuthRepository.Register(user)
@@ -60,10 +69,51 @@ func (s *AuthService) Register(registerReq *model.RegisterReq) (user *entity.Use
 	return user, nil
 }
 
+func (s *AuthService) SendOTP(email string) error {
+	// can not check user verification status
+	// this func might be needed for reset password
+
+	otp := generateOTP()
+	err := s.Smtp.SendEmail(email, "FilkomPedia OTP Verification", "Do not share this code with others. Your OTP code is "+otp)
+	if err != nil {
+		return err
+	}
+
+	err = s.AuthRepository.StoreOTP(email, otp)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *AuthService) VerifyOTP(email, otp string) error {
+	status := s.AuthRepository.VerifyOTP(email, otp)
+	if !status {
+		return &response.InvalidOTP
+	}
+
+	err := s.AuthRepository.DeleteOTP(email)
+	if err != nil {
+		return err
+	}
+
+	err = s.AuthRepository.VerifyEmail(email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error) {
 	user, err := s.UserRepository.GetUserByEmail(loginReq.Email)
 	if err != nil {
 		return nil, err
+	}
+
+	if !user.IsVerified {
+		return nil, &response.UserUnverified
 	}
 
 	err = s.Bcrypt.CompareAndHashPassword(user.Password, loginReq.Password)
@@ -171,4 +221,12 @@ func generateDeviceID() string {
 		panic(err)
 	}
 	return hex.EncodeToString(bytes)
+}
+
+func generateOTP() string {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return fmt.Sprintf("%06d", n.Int64())
 }

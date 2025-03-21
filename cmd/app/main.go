@@ -7,9 +7,11 @@ func main() {
 
 	app := config.StartFiber()
 	db := config.StartSqlx()
+	redis := config.StartRedis()
 
 	config.StartUp(&config.Config{
-		App: app,
-		DB:  db,
+		App:   app,
+		DB:    db,
+		Redis: redis,
 	})
 }

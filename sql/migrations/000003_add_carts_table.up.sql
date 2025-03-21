@@ -4,5 +4,5 @@ CREATE TABLE carts (
     book_id VARCHAR(36) NOT NULL,
     amount INTEGER NOT NULL CHECK(amount > 0),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (book_id) REFERENCES books(book_id)
+    FOREIGN KEY (book_id) REFERENCES books(id)
 );

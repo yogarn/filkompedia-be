@@ -10,6 +10,15 @@ type RegisterReq struct {
 	Password string `json:"password" db:"password" validate:"required,gte=8"`
 }
 
+type OtpReq struct {
+	Email string `json:"email" db:"email" validate:"required,email"`
+}
+
+type OtpVerifyReq struct {
+	Email string `json:"email" db:"email" validate:"required,email"`
+	Otp   string `json:"otp" validate:"required"`
+}
+
 type LoginReq struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required,gte=8"`

@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
@@ -13,6 +15,9 @@ import (
 
 type IAuthRepository interface {
 	Register(user *entity.User) (err error)
+	StoreOTP(email, otp string) error
+	VerifyOTP(email, inputOtp string) bool
+	VerifyEmail(email string) error
 	Login(session *entity.Session) (err error)
 	GetSessions(userId uuid.UUID) (sessions *[]entity.Session, err error)
 	CheckUserSession(token string) (session *entity.Session, err error)
@@ -21,18 +26,43 @@ type IAuthRepository interface {
 }
 
 type AuthRepository struct {
-	db *sqlx.DB
+	db  *sqlx.DB
+	rdb *redis.Client
 }
 
-func NewAuthRepository(db *sqlx.DB) IAuthRepository {
+func NewAuthRepository(db *sqlx.DB, rdb *redis.Client) IAuthRepository {
 	return &AuthRepository{
-		db: db,
+		db:  db,
+		rdb: rdb,
 	}
 }
 
 func (r *AuthRepository) Register(user *entity.User) (err error) {
 	query := `INSERT INTO users (id, username, email, password, role_id) VALUES ($1, $2, $3, $4, $5)`
 	_, err = r.db.Exec(query, user.Id, user.Username, user.Email, user.Password, user.RoleId)
+	return err
+}
+
+func (r *AuthRepository) StoreOTP(email, otp string) error {
+	expiration := 5 * time.Minute // should be in env, but im too lazy
+	return r.rdb.Set(context.Background(), email, otp, expiration).Err()
+}
+
+func (r *AuthRepository) VerifyOTP(email, inputOtp string) bool {
+	storedOtp, err := r.rdb.Get(context.Background(), email).Result()
+	if err != nil {
+		// whatever it is, its either expired or not found
+		return false
+	}
+
+	return storedOtp == inputOtp
+}
+
+func (r *AuthRepository) VerifyEmail(email string) error {
+	query := `UPDATE users SET is_verified = true WHERE email = $1`
+
+	_, err := r.db.Exec(query, email)
+
 	return err
 }
 

@@ -1,6 +1,9 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/go-redis/redis/v8"
+	"github.com/jmoiron/sqlx"
+)
 
 type Repository struct {
 	UserRepository IUserRepository
@@ -8,10 +11,10 @@ type Repository struct {
 	BookRepository IBookRepository
 }
 
-func NewRepository(db *sqlx.DB) *Repository {
+func NewRepository(db *sqlx.DB, redis *redis.Client) *Repository {
 	return &Repository{
 		UserRepository: NewUserRepository(db),
-		AuthRepository: NewAuthRepository(db),
+		AuthRepository: NewAuthRepository(db, redis),
 		BookRepository: NewBookRepository(db),
 	}
 }

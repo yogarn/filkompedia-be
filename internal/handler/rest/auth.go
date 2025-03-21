@@ -33,6 +33,46 @@ func (r *Rest) Register(ctx *fiber.Ctx) (err error) {
 	return nil
 }
 
+func (r *Rest) SendOtp(ctx *fiber.Ctx) (err error) {
+	otpReq := &model.OtpReq{}
+	if err := ctx.BodyParser(otpReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(otpReq); err != nil {
+		return err
+	}
+
+	err = r.service.AuthService.SendOTP(otpReq.Email)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusCreated, "success", nil)
+	return nil
+}
+
+func (r *Rest) VerifyOtp(ctx *fiber.Ctx) (err error) {
+	OtpVerifyReq := &model.OtpVerifyReq{}
+	if err := ctx.BodyParser(OtpVerifyReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(OtpVerifyReq); err != nil {
+		return err
+	}
+
+	err = r.service.AuthService.VerifyOTP(OtpVerifyReq.Email, OtpVerifyReq.Otp)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}
+
 func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 	loginReq := &model.LoginReq{}
 	if err := ctx.BodyParser(loginReq); err != nil {

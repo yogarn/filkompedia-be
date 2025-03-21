@@ -15,6 +15,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
 	"github.com/yogarn/filkompedia-be/pkg/middleware"
+	"github.com/yogarn/filkompedia-be/pkg/smtp"
 )
 
 type Config struct {
@@ -32,9 +33,10 @@ func LoadEnv() {
 func StartUp(config *Config) {
 	bcrypt := bcrypt.Init()
 	jwt := jwt.Init()
+	smtp := smtp.LoadSMTPCredentials()
 
-	repository := repository.NewRepository(config.DB)
-	service := service.NewService(repository, bcrypt, jwt)
+	repository := repository.NewRepository(config.DB, config.Redis)
+	service := service.NewService(repository, bcrypt, jwt, smtp)
 
 	middleware := middleware.Init(jwt, service)
 

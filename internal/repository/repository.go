@@ -9,6 +9,7 @@ type Repository struct {
 	UserRepository IUserRepository
 	AuthRepository IAuthRepository
 	BookRepository IBookRepository
+	CartRepository ICartRepository
 }
 
 func NewRepository(db *sqlx.DB, redis *redis.Client) *Repository {
@@ -16,5 +17,6 @@ func NewRepository(db *sqlx.DB, redis *redis.Client) *Repository {
 		UserRepository: NewUserRepository(db),
 		AuthRepository: NewAuthRepository(db, redis),
 		BookRepository: NewBookRepository(db),
+		CartRepository: NewCartRepository(db),
 	}
 }

@@ -43,6 +43,14 @@ func mountBook(routerGroup fiber.Router, r *Rest) {
 	books.Post("/book", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
 }
 
+func mountCart(routerGroup fiber.Router, r *Rest) {
+	carts := routerGroup.Group("/carts")
+	carts.Get("/user/:userId", r.GetUserCart)
+	carts.Get("/:cartId", r.GetCart)
+	carts.Post("/", r.AddToCart)
+	carts.Delete("/:cartId", r.RemoveFromCart)
+}
+
 func (r *Rest) RegisterRoutes() {
 	routerGroup := r.router.Group("/api/v1")
 
@@ -53,6 +61,7 @@ func (r *Rest) RegisterRoutes() {
 	mountUser(routerGroup, r)
 	mountAuth(routerGroup, r)
 	mountBook(routerGroup, r)
+	mountCart(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

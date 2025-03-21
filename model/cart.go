@@ -8,7 +8,7 @@ type CartParam struct {
 }
 
 type AddToCart struct {
-	Id     uuid.UUID `json:"cart_id"`
+	BookId uuid.UUID `json:"book_id"`
 	UserId uuid.UUID `json:"user_id"`
 	Amount int       `json:"amount"`
 }

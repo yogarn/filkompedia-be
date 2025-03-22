@@ -18,10 +18,11 @@ func StartFiber() *fiber.App {
 	)
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
+		AllowOrigins:     "http://localhost:5173", // should be moved to env in the near future
+		AllowCredentials: true,
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
-		AllowHeaders:     "Origin,Content-Type,Accept",
-		AllowCredentials: false,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		ExposeHeaders:    "Set-Cookie",
 	}))
 
 	return app

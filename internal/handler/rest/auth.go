@@ -107,8 +107,9 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		Value:    loginRes.JwtToken,
 		Expires:  time.Now().Add(time.Duration(expiresIn) * time.Second),
 		HTTPOnly: true,
-		Secure:   true,
+		Secure:   false, // should set true in prod
 		Path:     "/",
+		SameSite: "None",
 	})
 
 	ctx.Cookie(&fiber.Cookie{
@@ -116,8 +117,9 @@ func (r *Rest) Login(ctx *fiber.Ctx) (err error) {
 		Value:    loginRes.RefreshToken,
 		Expires:  time.Now().Add(time.Duration(refreshTokenExpiresIn) * time.Second),
 		HTTPOnly: true,
-		Secure:   true,
+		Secure:   false, // this one too
 		Path:     "/",
+		SameSite: "None",
 	})
 
 	response.Success(ctx, http.StatusOK, "success", nil)

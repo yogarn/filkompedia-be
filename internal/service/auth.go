@@ -178,10 +178,8 @@ func (s *AuthService) ExchangeToken(token string, expiry int) (jwtToken string, 
 	}
 
 	if time.Now().After(currentSession.ExpiresAt) {
-		err = s.AuthRepository.DeleteToken(currentSession.Token, currentSession.UserId)
-		if err != nil {
-			return "", "", &response.InvalidToken
-		}
+		_ = s.AuthRepository.DeleteToken(currentSession.Token, currentSession.UserId)
+		return "", "", &response.InvalidToken
 	}
 
 	jwtToken, err = s.Jwt.CreateToken(currentSession.UserId)

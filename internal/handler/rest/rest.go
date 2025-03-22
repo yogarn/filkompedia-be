@@ -38,9 +38,8 @@ func mountUser(routerGroup fiber.Router, r *Rest) {
 
 func mountBook(routerGroup fiber.Router, r *Rest) {
 	books := routerGroup.Group("/books")
-	books.Get("/", r.GetBooks)
-	books.Get("/books", r.SearchBooks)
-	books.Post("/book", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
+	books.Get("/", r.middleware.Authenticate, r.SearchBooks)
+	books.Post("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
 }
 
 func mountCart(routerGroup fiber.Router, r *Rest) {

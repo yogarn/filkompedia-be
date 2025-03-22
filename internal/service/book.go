@@ -8,7 +8,6 @@ import (
 )
 
 type IBookService interface {
-	GetBooks(books *[]entity.Book, bookReq model.BookReq) error
 	SearchBooks(books *[]entity.Book, bookSearch model.BookSearch) error
 	CreateBook(create *model.CreateBook) error
 }
@@ -21,10 +20,6 @@ func NewBookService(bookRepo repository.IBookRepository) IBookService {
 	return &BookService{
 		bookRepo: bookRepo,
 	}
-}
-
-func (s *BookService) GetBooks(books *[]entity.Book, bookReq model.BookReq) error {
-	return s.bookRepo.GetBooks(books, bookReq.Page, bookReq.PageSize)
 }
 
 func (s *BookService) SearchBooks(books *[]entity.Book, bookSearch model.BookSearch) error {

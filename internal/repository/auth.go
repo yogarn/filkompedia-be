@@ -22,7 +22,7 @@ type IAuthRepository interface {
 	Login(session *entity.Session) (err error)
 	GetSessions(userId uuid.UUID) (sessions *[]entity.Session, err error)
 	CheckUserSession(token string) (session *entity.Session, err error)
-	DeleteToken(token string, userId uuid.UUID) (err error)
+	DeleteExpiredToken(userId uuid.UUID) (err error)
 	ReplaceToken(token string, newToken string, userId uuid.UUID, expiresAt time.Time) (err error)
 }
 
@@ -118,13 +118,13 @@ func (r *AuthRepository) CheckUserSession(token string) (session *entity.Session
 	return session, nil
 }
 
-func (r *AuthRepository) DeleteToken(token string, userId uuid.UUID) (err error) {
+func (r *AuthRepository) DeleteExpiredToken(userId uuid.UUID) (err error) {
 	query := `
 		DELETE FROM sessions
-		WHERE token = $1 AND user_id = $2
+		WHERE user_id = $1 AND expires_at < NOW()
 	`
 
-	_, err = r.db.Exec(query, token, userId)
+	_, err = r.db.Exec(query, userId)
 	if err != nil {
 		return err
 	}

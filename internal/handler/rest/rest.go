@@ -64,7 +64,7 @@ func mountCart(routerGroup fiber.Router, r *Rest) {
 }
 
 func mountCheckout(routerGroup fiber.Router, r *Rest) {
-	checkouts := routerGroup.Get("/checkouts")
+	checkouts := routerGroup.Group("/checkouts")
 	checkouts.Get("/user/:userId", r.middleware.Authenticate, r.GetUserCheckouts)
 	checkouts.Get("/:checkoutId", r.middleware.Authenticate, r.GetCheckoutCarts)
 	checkouts.Post("/", r.middleware.Authenticate, r.Checkout)

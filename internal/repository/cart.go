@@ -26,8 +26,8 @@ func NewCartRepository(db *sqlx.DB) ICartRepository {
 }
 
 func (r *CartRepository) GetUserCart(carts *[]entity.Cart, user *entity.User) error {
-	query := `SELECT * FROM carts WHERE user_id = $1`
-	err := r.db.Select(carts, query, user.Id)
+	query := `SELECT * FROM carts WHERE user_id = $1 AND checkout_id = $2`
+	err := r.db.Select(carts, query, user.Id, uuid.Nil)
 	return err
 }
 
@@ -49,19 +49,19 @@ func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount 
 		return err
 	}
 
-	query := `INSERT INTO carts (id, user_id, book_id, amount) VALUES ($1, $2, $3, $4)`
-	_, err := r.db.Exec(query, uuid.New(), user.Id, book.Id, amount)
+	query := `INSERT INTO carts (id, user_id, book_id, amount, checkout_id) VALUES ($1, $2, $3, $4, $5)`
+	_, err := r.db.Exec(query, uuid.New(), user.Id, book.Id, amount, uuid.Nil)
 	return err
 }
 
 func (r *CartRepository) RemoveFromCart(cartId uuid.UUID) error {
-	query := `DELETE FROM carts WHERE id = $1`
-	_, err := r.db.Exec(query, cartId)
+	query := `DELETE FROM carts WHERE id = $1 AND checkout_id = $2`
+	_, err := r.db.Exec(query, cartId, uuid.Nil)
 	return err
 }
 
 func (r *CartRepository) doesCartExist(cart *entity.Cart, userId uuid.UUID, bookId uuid.UUID) error {
-	query := `SELECT * FROM carts WHERE user_id = $1 AND book_id = $2 LIMIT 1`
-	err := r.db.Get(cart, query, userId, bookId)
+	query := `SELECT * FROM carts WHERE user_id = $1 AND book_id = $2 AND checkout_id = $3 LIMIT 1`
+	err := r.db.Get(cart, query, userId, bookId, uuid.Nil)
 	return err
 }

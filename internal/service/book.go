@@ -8,6 +8,7 @@ import (
 )
 
 type IBookService interface {
+	GetBook(bookId uuid.UUID) (*model.BookResponse, error)
 	SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error)
 	CreateBook(create *model.CreateBook) error
 }
@@ -20,6 +21,27 @@ func NewBookService(bookRepo repository.IBookRepository) IBookService {
 	return &BookService{
 		bookRepo: bookRepo,
 	}
+}
+
+func (s *BookService) GetBook(bookId uuid.UUID) (*model.BookResponse, error) {
+	var book entity.Book
+	err := s.bookRepo.GetBook(&book, bookId)
+	if err != nil {
+		return nil, err
+	}
+
+	bookResponse := &model.BookResponse{
+		Id:           book.Id,
+		Title:        book.Title,
+		Description:  book.Description,
+		Introduction: book.Introduction,
+		Image:        book.Image,
+		Author:       book.Author,
+		ReleaseDate:  book.ReleaseDate,
+		Price:        book.Price,
+	}
+
+	return bookResponse, nil
 }
 
 func (s *BookService) SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error) {

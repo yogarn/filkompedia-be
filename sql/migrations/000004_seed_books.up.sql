@@ -20,7 +20,7 @@ VALUES
         '1999-10-20',
         'https://covers.openlibrary.org/b/id/135412-L.jpg',
         '',
-        1500.00
+        150000.00
     ),
     (
         'b56f251c-a31b-47b2-b38e-8e7147929476',
@@ -33,7 +33,7 @@ VALUES
         '2008-08-01',
         'https://covers.openlibrary.org/b/id/14840846-M.jpg',
         '',
-        1800.00
+        180000.00
     ),
     (
         'ff50722c-5de9-44d5-ad16-9e44d040152d',
@@ -44,7 +44,7 @@ VALUES
         '1994-10-21',
         '',
         '',
-        2200.00
+        220000.00
     ),
     (
         '853a47d6-29a7-4327-8894-0c34aab1076f',
@@ -56,7 +56,7 @@ VALUES
         '1999-07-08',
         'https://covers.openlibrary.org/b/id/7087623-M.jpg',
         '',
-        2000.00
+        200000.00
     ),
     (
         '4001e6db-91f0-4074-a909-0cea31303a54',
@@ -67,7 +67,7 @@ VALUES
         '1975-08-01',
         'https://covers.openlibrary.org/b/id/10653425-M.jpg',
         '',
-        1700.00
+        170000.00
     ),
     (
         'c0c01901-6504-422a-8448-08a0813a0a79',
@@ -80,7 +80,7 @@ VALUES
         '1993-06-09',
         'https://covers.openlibrary.org/b/id/8085500-M.jpg',
         '',
-        1900.00
+        190000.00
     ),
     (
         'ae9c2fdc-7a4d-4310-b66c-8d3d2bd9625b',
@@ -91,7 +91,7 @@ VALUES
         '2008-05-15',
         'https://covers.openlibrary.org/b/id/9245523-M.jpg',
         '',
-        1400.00
+        140000.00
     ),
     (
         '8fd9bbdb-12fa-43c3-83f5-6125ab3fee9b',
@@ -102,7 +102,7 @@ VALUES
         '2011-05-13',
         'https://covers.openlibrary.org/b/id/11311437-M.jpg',
         '',
-        1600.00
+        160000.00
     ),
     (
         '8e50d42f-674e-42c3-b990-7ec90865e8b9',
@@ -113,7 +113,7 @@ VALUES
         '2014-12-28',
         'https://covers.openlibrary.org/b/id/12033351-M.jpg',
         '',
-        1700.00
+        170000.00
     ),
     (
         'c0e43c0a-12d2-4074-8909-57e966a5ca7e',
@@ -124,7 +124,7 @@ VALUES
         '2009-07-31',
         'https://covers.openlibrary.org/b/id/6709987-M.jpg',
         '',
-        2500.00
+        250000.00
     ),
     (
         'b351d2b2-6c99-4f74-a011-938d6d499cae',
@@ -135,7 +135,7 @@ VALUES
         '2018-12-04',
         'https://covers.openlibrary.org/b/id/12995869-M.jpg',
         '',
-        1600.00
+        160000.00
     ),
     (
         '7c83db44-e06e-435a-a3c3-0d176fd83087',
@@ -146,5 +146,5 @@ VALUES
         '2003-08-30',
         'https://covers.openlibrary.org/b/id/7375231-M.jpg',
         '',
-        2400.00
+        240000.00
     );

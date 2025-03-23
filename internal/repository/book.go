@@ -60,8 +60,8 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 }
 
 func (r *BookRepository) GetBook(book *entity.Book, bookId uuid.UUID) error {
-	query := `SELECT TOP 1 FROM books WHERE book_id = $1`
-	err := r.db.Select(book, query, bookId)
+	query := `SELECT * FROM books WHERE id = $1 LIMIT 1`
+	err := r.db.Get(book, query, bookId)
 	return err
 }
 

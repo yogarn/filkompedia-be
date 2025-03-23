@@ -24,7 +24,9 @@ func NewErrorResponse(code int, message string) ErrorResponse {
 var (
 	InternalServerError = NewErrorResponse(http.StatusInternalServerError, "Internal server error")
 
-	UserNotFound   = NewErrorResponse(http.StatusNotFound, "User not found")
+	UserNotFound    = NewErrorResponse(http.StatusNotFound, "User not found")
+	CommentNotFound = NewErrorResponse(http.StatusNotFound, "Comment not found")
+
 	UserUnverified = NewErrorResponse(http.StatusForbidden, "User is not verified")
 
 	InvalidToken       = NewErrorResponse(http.StatusUnauthorized, "Token invalid")
@@ -32,5 +34,6 @@ var (
 	ExpiredToken       = NewErrorResponse(http.StatusUnauthorized, "Expired token")
 	InvalidCredentials = NewErrorResponse(http.StatusUnauthorized, "Invalid credentials")
 
+	Unauthorized     = NewErrorResponse(http.StatusUnauthorized, "Unauthorized access")
 	RoleUnauthorized = NewErrorResponse(http.StatusUnauthorized, "Insufficient role")
 )

@@ -14,13 +14,13 @@ type BookSearch struct {
 }
 
 type CreateBook struct {
-	Title        string  `json:"title"`
-	Description  string  `json:"description"`
-	Introduction string  `json:"introduction"`
+	Title        string  `json:"title" validate:"required"`
+	Description  string  `json:"description" validate:"required"`
+	Introduction string  `json:"introduction" validate:"required"`
 	Image        string  `json:"image"`
 	File         string  `jsob:"file"`
-	Author       string  `json:"author"`
-	ReleaseDate  string  `json:"release_date"`
+	Author       string  `json:"author" validate:"required"`
+	ReleaseDate  string  `json:"release_date" validate:"required"`
 	Price        float64 `json:"price"`
 }
 

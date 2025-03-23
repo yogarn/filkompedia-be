@@ -4,6 +4,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
+	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
 )
 
@@ -16,7 +17,7 @@ type Service struct {
 	CheckoutService ICheckoutService
 }
 
-func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient) *Service {
+func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient, midtrans midtrans.IMidtrans) *Service {
 	return &Service{
 		UserService:     NewUserService(repository.UserRepository),
 		AuthService:     NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt, smtp),

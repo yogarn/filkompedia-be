@@ -15,6 +15,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
 	"github.com/yogarn/filkompedia-be/pkg/middleware"
+	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
 )
 
@@ -34,9 +35,10 @@ func StartUp(config *Config) {
 	bcrypt := bcrypt.Init()
 	jwt := jwt.Init()
 	smtp := smtp.LoadSMTPCredentials()
+	midtrans := midtrans.NewMidtrans()
 
 	repository := repository.NewRepository(config.DB, config.Redis)
-	service := service.NewService(repository, bcrypt, jwt, smtp)
+	service := service.NewService(repository, bcrypt, jwt, smtp, midtrans)
 
 	middleware := middleware.Init(jwt, service)
 

@@ -23,5 +23,5 @@ CREATE TABLE sessions (
     expires_at timestamp,
     user_agent varchar(255),
     device_id varchar(255) UNIQUE, 
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

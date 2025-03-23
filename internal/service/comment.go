@@ -10,8 +10,8 @@ import (
 )
 
 type ICommentService interface {
-	GetComment(id uuid.UUID) (*entity.Comment, error)
-	GetCommentByBook(bookId uuid.UUID) (*[]entity.Comment, error)
+	GetComment(id uuid.UUID) (*model.CommentRes, error)
+	GetCommentByBook(bookId uuid.UUID) (*[]model.CommentRes, error)
 	CreateComment(commentReq *model.CreateComment, userId uuid.UUID) error
 	UpdateComment(commentReq *model.UpdateComment, userId uuid.UUID, bookId uuid.UUID, commentId uuid.UUID) error
 	DeleteComment(id uuid.UUID, userId uuid.UUID) error
@@ -19,24 +19,65 @@ type ICommentService interface {
 
 type CommentService struct {
 	commentRepository repository.ICommentRepository
+	userRepository    repository.IUserRepository
 }
 
-func NewCommentService(commentRepository repository.ICommentRepository) ICommentService {
+func NewCommentService(commentRepository repository.ICommentRepository, userRepository repository.IUserRepository) ICommentService {
 	return &CommentService{
 		commentRepository: commentRepository,
+		userRepository:    userRepository,
 	}
 }
 
-func (s *CommentService) GetComment(id uuid.UUID) (*entity.Comment, error) {
-	return s.commentRepository.GetComment(id)
+func (s *CommentService) GetComment(id uuid.UUID) (*model.CommentRes, error) {
+	comment, err := s.commentRepository.GetComment(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var user entity.User
+	err = s.userRepository.GetUser(&user, comment.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.CommentRes{
+		Id:        comment.Id,
+		UserId:    comment.UserId,
+		Username:  user.Username,
+		BookId:    comment.BookId,
+		Comment:   comment.Comment,
+		Rating:    comment.Rating,
+		CreatedAt: comment.CreatedAt,
+	}, nil
 }
 
-func (s *CommentService) GetCommentByBook(bookId uuid.UUID) (*[]entity.Comment, error) {
+func (s *CommentService) GetCommentByBook(bookId uuid.UUID) (*[]model.CommentRes, error) {
 	comments, err := s.commentRepository.GetCommentByBook(bookId)
 	if err != nil {
 		return nil, err
 	}
-	return comments, nil
+
+	var commentResponses []model.CommentRes
+	for _, comment := range *comments {
+		var user entity.User
+		err := s.userRepository.GetUser(&user, comment.UserId)
+		if err != nil {
+			return nil, err
+		}
+
+		commentResponses = append(commentResponses, model.CommentRes{
+			Id:        comment.Id,
+			UserId:    comment.UserId,
+			Username:  user.Username,
+			BookId:    comment.BookId,
+			Comment:   comment.Comment,
+			Rating:    comment.Rating,
+			CreatedAt: comment.CreatedAt,
+		})
+	}
+
+	return &commentResponses, nil
 }
 
 func (s *CommentService) CreateComment(commentReq *model.CreateComment, userId uuid.UUID) error {

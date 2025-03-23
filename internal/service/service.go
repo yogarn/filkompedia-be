@@ -21,6 +21,6 @@ func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jw
 		AuthService:    NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt, smtp),
 		BookService:    NewBookService(repository.BookRepository),
 		CartService:    NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),
-		CommentService: NewCommentService(repository.CommentRepository),
+		CommentService: NewCommentService(repository.CommentRepository, repository.UserRepository),
 	}
 }

@@ -10,6 +10,21 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
+func (r *Rest) GetMe(ctx *fiber.Ctx) (err error) {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	var profile model.Profile
+	if err := r.service.UserService.GetProfile(&profile, userId); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", profile)
+	return nil
+}
+
 func (r *Rest) GetUserProfile(ctx *fiber.Ctx) (err error) {
 	param := ctx.Params("userId")
 	userId, err := uuid.Parse(param)

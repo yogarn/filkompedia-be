@@ -33,6 +33,7 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 func mountUser(routerGroup fiber.Router, r *Rest) {
 	users := routerGroup.Group("/users")
 	users.Get("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetAllUserProfile)
+	users.Get("/me", r.middleware.Authenticate, r.GetMe)
 	users.Get("/:userId", r.GetUserProfile)
 }
 

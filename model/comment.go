@@ -1,8 +1,20 @@
 package model
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
+
+type CommentRes struct {
+	Id        uuid.UUID `json:"id"`
+	UserId    uuid.UUID `json:"user_id"`
+	Username  string    `json:"username"`
+	BookId    uuid.UUID `json:"book_id"`
+	Comment   string    `json:"comment"`
+	Rating    int       `json:"rating"`
+	CreatedAt time.Time `json:"created_at"`
+}
 
 type CreateComment struct {
 	BookId  uuid.UUID `json:"book_id" validate:"required"`

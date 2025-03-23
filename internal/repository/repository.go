@@ -10,6 +10,7 @@ type Repository struct {
 	AuthRepository     IAuthRepository
 	BookRepository     IBookRepository
 	CartRepository     ICartRepository
+	CommentRepository  ICommentRepository
 	CheckoutRepository ICheckoutRepository
 }
 
@@ -19,6 +20,7 @@ func NewRepository(db *sqlx.DB, redis *redis.Client) *Repository {
 		AuthRepository:     NewAuthRepository(db, redis),
 		BookRepository:     NewBookRepository(db),
 		CartRepository:     NewCartRepository(db),
+		CommentRepository:  NewCommentRepository(db),
 		CheckoutRepository: NewCheckoutRepository(db),
 	}
 }

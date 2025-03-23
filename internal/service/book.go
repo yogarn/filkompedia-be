@@ -8,7 +8,8 @@ import (
 )
 
 type IBookService interface {
-	SearchBooks(books *[]entity.Book, bookSearch model.BookSearch) error
+	GetBook(bookId uuid.UUID) (*model.BookResponse, error)
+	SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error)
 	CreateBook(create *model.CreateBook) error
 }
 
@@ -22,9 +23,51 @@ func NewBookService(bookRepo repository.IBookRepository) IBookService {
 	}
 }
 
-func (s *BookService) SearchBooks(books *[]entity.Book, bookSearch model.BookSearch) error {
-	return s.bookRepo.SearchBooks(books, bookSearch.Page, bookSearch.PageSize, bookSearch.SearchParam)
+func (s *BookService) GetBook(bookId uuid.UUID) (*model.BookResponse, error) {
+	var book entity.Book
+	err := s.bookRepo.GetBook(&book, bookId)
+	if err != nil {
+		return nil, err
+	}
+
+	bookResponse := &model.BookResponse{
+		Id:           book.Id,
+		Title:        book.Title,
+		Description:  book.Description,
+		Introduction: book.Introduction,
+		Image:        book.Image,
+		Author:       book.Author,
+		ReleaseDate:  book.ReleaseDate,
+		Price:        book.Price,
+	}
+
+	return bookResponse, nil
 }
+
+func (s *BookService) SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error) {
+	var booksEntity []entity.Book
+	err := s.bookRepo.SearchBooks(&booksEntity, bookSearch.Page, bookSearch.PageSize, bookSearch.SearchParam)
+	if err != nil {
+		return nil, err
+	}
+
+	booksResponse := make([]model.BookResponse, len(booksEntity))
+	for i, book := range booksEntity {
+		booksResponse[i] = model.BookResponse{
+			Id:           book.Id,
+			Title:        book.Title,
+			Image:        book.Image,
+			Description:  book.Description,
+			Introduction: book.Introduction,
+			Author:       book.Author,
+			ReleaseDate:  book.ReleaseDate,
+			Price:        book.Price,
+		}
+	}
+
+	return &booksResponse, nil
+}
+
 func (s *BookService) CreateBook(create *model.CreateBook) error {
 	return s.bookRepo.CreateBook(&entity.Book{
 		Id:          uuid.New(),

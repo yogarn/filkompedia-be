@@ -109,7 +109,8 @@ func (s *AuthService) VerifyOTP(email, otp string) error {
 func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error) {
 	user, err := s.UserRepository.GetUserByEmail(loginReq.Email)
 	if err != nil {
-		return nil, err
+		// prevent user from guessing that an account is existed or not
+		return nil, &response.InvalidCredentials
 	}
 
 	if !user.IsVerified {
@@ -139,6 +140,9 @@ func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgen
 		DeviceId:  generateDeviceID(),
 		ExpiresAt: time.Now().Add(time.Duration(expiry) * time.Second),
 	}
+
+	// before proceed, clear existing sessions
+	_ = s.AuthRepository.DeleteExpiredToken(user.Id)
 
 	err = s.AuthRepository.Login(session)
 	if err != nil {
@@ -175,11 +179,6 @@ func (s *AuthService) ExchangeToken(token string, expiry int) (jwtToken string, 
 	currentSession, err := s.AuthRepository.CheckUserSession(token)
 	if err != nil {
 		return "", "", err
-	}
-
-	if time.Now().After(currentSession.ExpiresAt) {
-		_ = s.AuthRepository.DeleteToken(currentSession.Token, currentSession.UserId)
-		return "", "", &response.InvalidToken
 	}
 
 	jwtToken, err = s.Jwt.CreateToken(currentSession.UserId)

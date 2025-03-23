@@ -4,10 +4,26 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
+
+func (r *Rest) GetBook(ctx *fiber.Ctx) error {
+	bookIdString := ctx.Params("id")
+	bookId, err := uuid.Parse(bookIdString)
+	if err != nil {
+		return err
+	}
+
+	books, err := r.service.BookService.GetBook(bookId)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", books)
+	return nil
+}
 
 func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 	var bookSearch model.BookSearch
@@ -15,8 +31,8 @@ func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 	bookSearch.PageSize = ctx.QueryInt("size", 9)
 	bookSearch.SearchParam = ctx.Query("search", "%")
 
-	var books []entity.Book
-	if err := r.service.BookService.SearchBooks(&books, bookSearch); err != nil {
+	books, err := r.service.BookService.SearchBooks(bookSearch)
+	if err != nil {
 		return err
 	}
 

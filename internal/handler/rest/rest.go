@@ -33,13 +33,26 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 func mountUser(routerGroup fiber.Router, r *Rest) {
 	users := routerGroup.Group("/users")
 	users.Get("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetAllUserProfile)
+	users.Get("/me", r.middleware.Authenticate, r.GetMe)
 	users.Get("/:userId", r.GetUserProfile)
 }
 
 func mountBook(routerGroup fiber.Router, r *Rest) {
 	books := routerGroup.Group("/books")
 	books.Get("/", r.middleware.Authenticate, r.SearchBooks)
+	books.Get("/:id", r.middleware.Authenticate, r.GetBook)
 	books.Post("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
+}
+
+func mountComment(routerGroup fiber.Router, r *Rest) {
+	comments := routerGroup.Group("/comments")
+	comments.Use(r.middleware.Authenticate)
+
+	comments.Get("/:id", r.GetComment)
+	comments.Get("/book/:bookId", r.GetCommentByBook)
+	comments.Post("/", r.CreateComment)
+	comments.Put("/book/:bookId/comment/:id", r.UpdateComment)
+	comments.Delete("/:id", r.DeleteComment)
 }
 
 func mountCart(routerGroup fiber.Router, r *Rest) {
@@ -67,6 +80,7 @@ func (r *Rest) RegisterRoutes() {
 	mountUser(routerGroup, r)
 	mountAuth(routerGroup, r)
 	mountBook(routerGroup, r)
+	mountComment(routerGroup, r)
 	mountCart(routerGroup, r)
 	mountCheckout(routerGroup, r)
 }

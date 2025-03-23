@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
@@ -15,8 +14,8 @@ func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 	bookSearch.PageSize = ctx.QueryInt("size", 9)
 	bookSearch.SearchParam = ctx.Query("search", "%")
 
-	var books []entity.Book
-	if err := r.service.BookService.SearchBooks(&books, bookSearch); err != nil {
+	books, err := r.service.BookService.SearchBooks(bookSearch)
+	if err != nil {
 		return err
 	}
 

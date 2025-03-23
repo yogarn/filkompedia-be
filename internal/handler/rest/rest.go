@@ -50,6 +50,13 @@ func mountCart(routerGroup fiber.Router, r *Rest) {
 	carts.Delete("/:cartId", r.RemoveFromCart)
 }
 
+func mountCheckout(routerGroup fiber.Router, r *Rest) {
+	checkouts := routerGroup.Get("/checkouts")
+	checkouts.Get("/user/:userId", r.GetUserCheckouts)
+	checkouts.Get("/:checkoutId", r.GetCheckoutCarts)
+	checkouts.Post("/", r.Checkout)
+}
+
 func (r *Rest) RegisterRoutes() {
 	routerGroup := r.router.Group("/api/v1")
 
@@ -61,6 +68,7 @@ func (r *Rest) RegisterRoutes() {
 	mountAuth(routerGroup, r)
 	mountBook(routerGroup, r)
 	mountCart(routerGroup, r)
+	mountCheckout(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

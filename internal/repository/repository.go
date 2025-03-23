@@ -6,17 +6,19 @@ import (
 )
 
 type Repository struct {
-	UserRepository IUserRepository
-	AuthRepository IAuthRepository
-	BookRepository IBookRepository
-	CartRepository ICartRepository
+	UserRepository     IUserRepository
+	AuthRepository     IAuthRepository
+	BookRepository     IBookRepository
+	CartRepository     ICartRepository
+	CheckoutRepository ICheckoutRepository
 }
 
 func NewRepository(db *sqlx.DB, redis *redis.Client) *Repository {
 	return &Repository{
-		UserRepository: NewUserRepository(db),
-		AuthRepository: NewAuthRepository(db, redis),
-		BookRepository: NewBookRepository(db),
-		CartRepository: NewCartRepository(db),
+		UserRepository:     NewUserRepository(db),
+		AuthRepository:     NewAuthRepository(db, redis),
+		BookRepository:     NewBookRepository(db),
+		CartRepository:     NewCartRepository(db),
+		CheckoutRepository: NewCheckoutRepository(db),
 	}
 }

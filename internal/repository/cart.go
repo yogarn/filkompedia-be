@@ -44,7 +44,7 @@ func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount 
 
 	var cart entity.Cart
 	if r.doesCartExist(&cart, user.Id, book.Id); cart.Amount > 0 {
-		query := `UPDATE carts SET amount = $1 + $2 WHERE user_id = $3 AND book_id = $4 `
+		query := `UPDATE carts SET amount = $1 + $2 WHERE user_id = $3 AND book_id = $4`
 		_, err := r.db.Exec(query, cart.Amount, amount, user.Id, book.Id)
 		return err
 	}

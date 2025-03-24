@@ -29,3 +29,6 @@ go.work.sum
 
 # postgres data
 postgres_data/
+
+# redis data
+redis_data/

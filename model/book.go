@@ -3,14 +3,14 @@ package model
 import "github.com/google/uuid"
 
 type BookReq struct {
-	Page     int `json:"page" validate:"required"`
-	PageSize int `json:"page_size" validate:"required"`
+	Page     int `json:"page" validate:"required,min=1"`
+	PageSize int `json:"page_size" validate:"required,min=1"`
 }
 
 type BookSearch struct {
-	Page        int    `json:"page" validate:"required"`
-	PageSize    int    `json:"page_size" validate:"required"`
-	SearchParam string `json:"search_param" validate:"required"`
+	Page        int    `json:"page" validate:"required,min=1"`
+	PageSize    int    `json:"page_size" validate:"required,min=1"`
+	SearchParam string `json:"search_param" validate:"required,min=1"`
 }
 
 type CreateBook struct {

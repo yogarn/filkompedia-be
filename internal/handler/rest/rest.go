@@ -57,10 +57,17 @@ func mountComment(routerGroup fiber.Router, r *Rest) {
 
 func mountCart(routerGroup fiber.Router, r *Rest) {
 	carts := routerGroup.Group("/carts")
-	carts.Get("/user/:userId", r.GetUserCart)
-	carts.Get("/:cartId", r.GetCart)
-	carts.Post("/", r.AddToCart)
-	carts.Delete("/:cartId", r.RemoveFromCart)
+	carts.Get("/user/:userId", r.middleware.Authenticate, r.GetUserCart)
+	carts.Get("/:cartId", r.middleware.Authenticate, r.GetCart)
+	carts.Post("/", r.middleware.Authenticate, r.AddToCart)
+	carts.Delete("/:cartId", r.middleware.Authenticate, r.RemoveFromCart)
+}
+
+func mountCheckout(routerGroup fiber.Router, r *Rest) {
+	checkouts := routerGroup.Group("/checkouts")
+	checkouts.Get("/user/:userId", r.middleware.Authenticate, r.GetUserCheckouts)
+	checkouts.Get("/:checkoutId", r.middleware.Authenticate, r.GetCheckoutCarts)
+	checkouts.Post("/", r.middleware.Authenticate, r.Checkout)
 }
 
 func (r *Rest) RegisterRoutes() {
@@ -75,6 +82,7 @@ func (r *Rest) RegisterRoutes() {
 	mountBook(routerGroup, r)
 	mountComment(routerGroup, r)
 	mountCart(routerGroup, r)
+	mountCheckout(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

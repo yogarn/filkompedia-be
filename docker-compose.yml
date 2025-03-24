@@ -47,6 +47,20 @@ services:
       - postgres
     restart: on-failure
 
+  filkompedia_fe:
+    container_name: "filkompedia-fe"
+    build:
+      context: ../filkompedia-fe
+    ports:
+      - "5173:5173"
+    networks:
+      - filkompedia
+    depends_on:
+      - filkompedia_be
+    restart: on-failure
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+
 networks:
   filkompedia:
     name: filkompedia

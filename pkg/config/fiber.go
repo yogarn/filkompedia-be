@@ -18,7 +18,7 @@ func StartFiber() *fiber.App {
 	)
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173", // should be moved to env in the near future
+		AllowOrigins:     "http://localhost:5173, https://filkompedia.yogarn.my.id",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",

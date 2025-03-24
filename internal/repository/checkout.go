@@ -43,7 +43,7 @@ func (r *CheckoutRepository) AddCheckoutId(cartID uuid.UUID, checkoutId uuid.UUI
 	return err
 }
 
-func (r *CheckoutRepository) NewCheckout(userId, CheckoutId uuid.UUID) error {
+func (r *CheckoutRepository) NewCheckout(CheckoutId, userId uuid.UUID) error {
 	query := `INSERT INTO checkouts (id, user_id) VALUES ($1, $2)`
 	_, err := r.db.Exec(query, CheckoutId, userId)
 	return err

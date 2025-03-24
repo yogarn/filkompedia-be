@@ -47,7 +47,7 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest) error {
 	}
 
 	newCheckoutId := uuid.New()
-	if err := s.checkoutRepo.NewCheckout(checkoutReq.UserId, newCheckoutId); err != nil {
+	if err := s.checkoutRepo.NewCheckout(newCheckoutId, checkoutReq.UserId); err != nil {
 		return err
 	}
 

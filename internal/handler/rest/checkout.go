@@ -47,13 +47,15 @@ func (r *Rest) Checkout(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if err := r.service.CheckoutService.Checkout(request); err != nil {
+	checkoutId := uuid.New()
+	totalPrice, err := r.service.CheckoutService.Checkout(request, checkoutId)
+	if err != nil {
 		return err
 	}
 
 	//handle payments
 
-	response.Success(ctx, http.StatusOK, "success", nil) //payment details
+	response.Success(ctx, http.StatusOK, "success", totalPrice) //payment details
 
 	return nil
 }

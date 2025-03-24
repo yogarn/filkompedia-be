@@ -56,8 +56,22 @@ func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount 
 
 func (r *CartRepository) RemoveFromCart(cartId uuid.UUID) error {
 	query := `DELETE FROM carts WHERE id = $1 AND checkout_id IS NULL`
-	_, err := r.db.Exec(query, cartId)
-	return err
+	result, err := r.db.Exec(query, cartId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows deleted")
+	}
+
+	return nil
 }
 
 func (r *CartRepository) doesCartExist(cart *entity.Cart, userId uuid.UUID, bookId uuid.UUID) error {

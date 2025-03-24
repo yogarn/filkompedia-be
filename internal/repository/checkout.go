@@ -33,7 +33,7 @@ func (r *CheckoutRepository) GetUserCheckouts(userId uuid.UUID) ([]entity.Checko
 func (r *CheckoutRepository) GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart, error) {
 	var carts []entity.Cart
 	query := `SELECT * FROM carts WHERE checkout_id = $1`
-	err := r.db.Select(carts, query, checkoutId)
+	err := r.db.Select(&carts, query, checkoutId)
 	return carts, err
 }
 

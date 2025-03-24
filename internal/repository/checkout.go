@@ -10,6 +10,7 @@ type ICheckoutRepository interface {
 	GetUserCheckouts(userId uuid.UUID) ([]entity.Checkout, error)
 	GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart, error)
 	AddCheckoutId(cartID uuid.UUID, checkoutId uuid.UUID) error
+	NewCheckout(userId, CheckoutId uuid.UUID) error
 }
 
 type CheckoutRepository struct {
@@ -37,7 +38,13 @@ func (r *CheckoutRepository) GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Ca
 }
 
 func (r *CheckoutRepository) AddCheckoutId(cartID uuid.UUID, checkoutId uuid.UUID) error {
-	query := `UPDATE TABLE carts SET checkout_id = $1 WHERE id = $2`
+	query := `UPDATE carts SET checkout_id = $1 WHERE id = $2`
 	_, err := r.db.Exec(query, checkoutId, cartID)
+	return err
+}
+
+func (r *CheckoutRepository) NewCheckout(userId, CheckoutId uuid.UUID) error {
+	query := `INSERT INTO checkouts (id, user_id) VALUES ($1, $2)`
+	_, err := r.db.Exec(query, CheckoutId, userId)
 	return err
 }

@@ -23,6 +23,7 @@ type CheckoutService struct {
 func NewCheckoutService(checkoutRepo repository.ICheckoutRepository, cartRepo repository.ICartRepository) ICheckoutService {
 	return &CheckoutService{
 		checkoutRepo: checkoutRepo,
+		cartRepo:     cartRepo,
 	}
 }
 
@@ -46,6 +47,10 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest) error {
 	}
 
 	newCheckoutId := uuid.New()
+	if err := s.checkoutRepo.NewCheckout(checkoutReq.UserId, newCheckoutId); err != nil {
+		return err
+	}
+
 	for _, cart_id := range checkoutReq.CartsId {
 		if err := s.checkoutRepo.AddCheckoutId(cart_id, newCheckoutId); err != nil {
 			return err

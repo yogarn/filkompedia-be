@@ -26,7 +26,7 @@ func NewCheckoutRepository(db *sqlx.DB) ICheckoutRepository {
 func (r *CheckoutRepository) GetUserCheckouts(userId uuid.UUID) ([]entity.Checkout, error) {
 	var checkouts []entity.Checkout
 	query := `SELECT * FROM checkouts WHERE user_id = $1`
-	err := r.db.Select(checkouts, query, userId)
+	err := r.db.Select(&checkouts, query, userId)
 	return checkouts, err
 }
 

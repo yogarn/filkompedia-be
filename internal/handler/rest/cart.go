@@ -63,7 +63,12 @@ func (r *Rest) AddToCart(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	if err := r.service.CartService.AddToCart(add); err != nil {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	if err := r.service.CartService.AddToCart(add, userId); err != nil {
 		return err
 	}
 

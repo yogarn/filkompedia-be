@@ -63,6 +63,7 @@ func mountCart(routerGroup fiber.Router, r *Rest) {
 	carts.Get("/user", r.GetUserCart)
 	carts.Get("/:cartId", r.GetCart)
 	carts.Post("/", r.AddToCart)
+	carts.Patch("/", r.EditCart)
 	carts.Delete("/:cartId", r.RemoveFromCart)
 }
 

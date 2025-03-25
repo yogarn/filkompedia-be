@@ -11,6 +11,21 @@ import (
 )
 
 func (r *Rest) GetUserCart(ctx *fiber.Ctx) error {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	var carts []entity.Cart
+	if err := r.service.CartService.GetUserCart(&carts, userId); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", carts)
+	return nil
+}
+
+func (r *Rest) GetUserCartAdmin(ctx *fiber.Ctx) error {
 	param := ctx.Params("userId")
 	userId, err := uuid.Parse(param)
 	if err != nil {

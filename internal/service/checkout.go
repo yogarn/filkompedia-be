@@ -12,7 +12,7 @@ import (
 type ICheckoutService interface {
 	GetUserCheckouts(userId uuid.UUID) ([]entity.Checkout, error)
 	GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart, error)
-	Checkout(checkoutReq model.CheckoutRequest, checkoutId uuid.UUID) (float64, error)
+	Checkout(checkoutReq model.CheckoutRequest, userId uuid.UUID, checkoutId uuid.UUID) (float64, error)
 }
 
 type CheckoutService struct {
@@ -37,7 +37,7 @@ func (s *CheckoutService) GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart,
 	return s.checkoutRepo.GetCheckoutCarts(checkoutId)
 }
 
-func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, checkoutId uuid.UUID) (totalPrice float64, err error) {
+func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, userId uuid.UUID, checkoutId uuid.UUID) (totalPrice float64, err error) {
 	for _, cart_id := range checkoutReq.CartsId {
 		var cart entity.Cart
 		if err := s.cartRepo.GetCart(&cart, cart_id); err != nil {
@@ -49,14 +49,14 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, checkoutId
 			return 0, err
 		}
 
-		if cart.UserId != checkoutReq.UserId {
+		if cart.UserId != userId {
 			return 0, errors.New("invalid input at " + cart_id.String())
 		}
 
 		totalPrice += (float64(cart.Amount) * book.Price)
 	}
 
-	if err := s.checkoutRepo.NewCheckout(checkoutId, checkoutReq.UserId); err != nil {
+	if err := s.checkoutRepo.NewCheckout(checkoutId, userId); err != nil {
 		return 0, err
 	}
 

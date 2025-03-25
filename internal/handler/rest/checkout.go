@@ -10,6 +10,21 @@ import (
 )
 
 func (r *Rest) GetUserCheckouts(ctx *fiber.Ctx) error {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	checkouts, err := r.service.CheckoutService.GetUserCheckouts(userId)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", checkouts)
+	return nil
+}
+
+func (r *Rest) GetUserCheckoutsAdmin(ctx *fiber.Ctx) error {
 	param := ctx.Params("userId")
 	userId, err := uuid.Parse(param)
 	if err != nil {
@@ -47,8 +62,13 @@ func (r *Rest) Checkout(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
 	checkoutId := uuid.New()
-	totalPrice, err := r.service.CheckoutService.Checkout(request, checkoutId)
+	totalPrice, err := r.service.CheckoutService.Checkout(request, userId, checkoutId)
 	if err != nil {
 		return err
 	}

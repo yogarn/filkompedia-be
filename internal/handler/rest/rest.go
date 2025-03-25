@@ -57,17 +57,23 @@ func mountComment(routerGroup fiber.Router, r *Rest) {
 
 func mountCart(routerGroup fiber.Router, r *Rest) {
 	carts := routerGroup.Group("/carts")
-	carts.Get("/user/:userId", r.middleware.Authenticate, r.GetUserCart)
-	carts.Get("/:cartId", r.middleware.Authenticate, r.GetCart)
-	carts.Post("/", r.middleware.Authenticate, r.AddToCart)
-	carts.Delete("/:cartId", r.middleware.Authenticate, r.RemoveFromCart)
+	carts.Use(r.middleware.Authenticate)
+
+	carts.Get("/user/:userId", r.middleware.Authorize([]int{1}), r.GetUserCartAdmin)
+	carts.Get("/user", r.GetUserCart)
+	carts.Get("/:cartId", r.GetCart)
+	carts.Post("/", r.AddToCart)
+	carts.Delete("/:cartId", r.RemoveFromCart)
 }
 
 func mountCheckout(routerGroup fiber.Router, r *Rest) {
 	checkouts := routerGroup.Group("/checkouts")
-	checkouts.Get("/user/:userId", r.middleware.Authenticate, r.GetUserCheckouts)
-	checkouts.Get("/:checkoutId", r.middleware.Authenticate, r.GetCheckoutCarts)
-	checkouts.Post("/", r.middleware.Authenticate, r.Checkout)
+	checkouts.Use(r.middleware.Authenticate)
+
+	checkouts.Get("/user/:userId", r.middleware.Authorize([]int{1}), r.GetUserCheckoutsAdmin)
+	checkouts.Get("/user", r.GetUserCheckouts)
+	checkouts.Get("/:checkoutId", r.GetCheckoutCarts)
+	checkouts.Post("/", r.Checkout)
 }
 
 func (r *Rest) RegisterRoutes() {

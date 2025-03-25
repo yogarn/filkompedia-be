@@ -9,6 +9,5 @@ type CartParam struct {
 
 type AddToCart struct {
 	BookId uuid.UUID `json:"book_id" validate:"required,uuid"`
-	UserId uuid.UUID `json:"user_id" validate:"required,uuid"`
 	Amount int       `json:"amount" validate:"required,min=1"`
 }

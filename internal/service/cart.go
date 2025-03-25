@@ -10,7 +10,7 @@ import (
 type ICartService interface {
 	GetUserCart(carts *[]entity.Cart, UserId uuid.UUID) error
 	GetCart(cart *entity.Cart, cartId uuid.UUID) error
-	AddToCart(add model.AddToCart) error
+	AddToCart(add model.AddToCart, userId uuid.UUID) error
 	RemoveFromCart(cartId uuid.UUID) error
 }
 
@@ -41,9 +41,9 @@ func (s *CartService) GetCart(cart *entity.Cart, cartId uuid.UUID) error {
 	return s.cartRepo.GetCart(cart, cartId)
 }
 
-func (s *CartService) AddToCart(add model.AddToCart) error {
+func (s *CartService) AddToCart(add model.AddToCart, userId uuid.UUID) error {
 	var user entity.User
-	if err := s.userRepo.GetUser(&user, add.UserId); err != nil {
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
 		return err
 	}
 

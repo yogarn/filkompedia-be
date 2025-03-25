@@ -59,8 +59,8 @@ func mountCart(routerGroup fiber.Router, r *Rest) {
 	carts := routerGroup.Group("/carts")
 	carts.Use(r.middleware.Authenticate)
 
-	carts.Get("/user/:userId", r.GetUserCartAdmin)
-	carts.Get("/user", r.middleware.Authorize([]int{1}), r.GetUserCart)
+	carts.Get("/user/:userId", r.middleware.Authorize([]int{1}), r.GetUserCartAdmin)
+	carts.Get("/user", r.GetUserCart)
 	carts.Get("/:cartId", r.GetCart)
 	carts.Post("/", r.AddToCart)
 	carts.Delete("/:cartId", r.RemoveFromCart)
@@ -70,8 +70,8 @@ func mountCheckout(routerGroup fiber.Router, r *Rest) {
 	checkouts := routerGroup.Group("/checkouts")
 	checkouts.Use(r.middleware.Authenticate)
 
-	checkouts.Get("/user/:userId", r.GetUserCheckoutsAdmin)
-	checkouts.Get("/user", r.middleware.Authorize([]int{1}), r.GetUserCheckouts)
+	checkouts.Get("/user/:userId", r.middleware.Authorize([]int{1}), r.GetUserCheckoutsAdmin)
+	checkouts.Get("/user", r.GetUserCheckouts)
 	checkouts.Get("/:checkoutId", r.GetCheckoutCarts)
 	checkouts.Post("/", r.Checkout)
 }

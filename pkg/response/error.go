@@ -26,6 +26,8 @@ var (
 
 	UserNotFound    = NewErrorResponse(http.StatusNotFound, "User not found")
 	CommentNotFound = NewErrorResponse(http.StatusNotFound, "Comment not found")
+	BookNotFound    = NewErrorResponse(http.StatusNotFound, "Book not found")
+	CartNotFound    = NewErrorResponse(http.StatusNotFound, "Cart not found")
 
 	UserUnverified = NewErrorResponse(http.StatusForbidden, "User is not verified")
 

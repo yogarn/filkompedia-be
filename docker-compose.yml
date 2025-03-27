@@ -31,11 +31,26 @@ services:
       image: prom/prometheus:latest
       ports:
         - ${PROMETHEUS_PORT}:9090
+      networks:
+        - filkompedia
       volumes:
         - ./pkg/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - ${GRAFANA_PORT}:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_PASS}
+    networks:
+      - filkompedia
+    volumes:
+      - ./pkg/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./grafana:/var/lib/grafana
         
   filkompedia_be:
-    container_name: "filkompedia-be"
+    container_name: "filkompedia_be"
     build:
       context: .
     env_file:
@@ -54,9 +69,14 @@ services:
     depends_on:
       - postgres
     restart: on-failure
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_USER}", "-d", "${DB_NAME}"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
 
   filkompedia_fe:
-    container_name: "filkompedia-fe"
+    container_name: "filkompedia_fe"
     build:
       context: ../filkompedia-fe
     ports:

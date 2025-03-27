@@ -19,6 +19,11 @@ func PromMiddleware(reg monitoring.Metrics) fiber.Handler {
 
 		err := c.Next()
 
+		// somehow this deep copy fix data race issues with fasthttp
+		// do not remove
+		method := string(append([]byte{}, c.Method()...))
+		path := string(append([]byte{}, c.Path()...))
+
 		respStatus := c.Response().StatusCode()
 		duration := time.Since(now).Seconds()
 
@@ -40,8 +45,8 @@ func PromMiddleware(reg monitoring.Metrics) fiber.Handler {
 			}
 		}
 
-		reg.Duration.WithLabelValues(strconv.Itoa(respStatus), c.Method(), c.Path()).Observe(duration)
-		reg.RequestTotal.With(prometheus.Labels{"response_code": strconv.Itoa(respStatus), "method": c.Method()}).Inc()
+		reg.Duration.WithLabelValues(strconv.Itoa(respStatus), method, path).Observe(duration)
+		reg.RequestTotal.With(prometheus.Labels{"response_code": strconv.Itoa(respStatus), "method": method}).Inc()
 		reg.DurationSummary.Observe(duration)
 
 		return err

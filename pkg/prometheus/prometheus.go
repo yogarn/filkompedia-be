@@ -22,24 +22,24 @@ type Metrics struct {
 func PrometheusNewMetrics(reg prometheus.Registerer) *Metrics {
 	m := &Metrics{
 		Info: prometheus.NewGaugeVec(prometheus.GaugeOpts{
-			Namespace: "filkompedia",
+			Namespace: "filkompedia_be",
 			Name:      "info",
 			Help:      "",
 		},
 			[]string{"version"}),
 		RequestTotal: prometheus.NewCounterVec(prometheus.CounterOpts{
-			Namespace: "filkompedia",
+			Namespace: "filkompedia_be",
 			Name:      "number_total_request",
 			Help:      "Number of total request",
 		}, []string{"response_code", "method"}),
 		Duration: prometheus.NewHistogramVec(prometheus.HistogramOpts{
-			Namespace: "filkompedia",
+			Namespace: "filkompedia_be",
 			Name:      "request_duration_seconds",
 			Buckets:   []float64{.1, .15, .2, .25, .3},
 			Help:      "Request duration in seconds",
 		}, []string{"status", "method", "route"}),
 		DurationSummary: prometheus.NewSummary(prometheus.SummaryOpts{
-			Namespace:  "filkompedia",
+			Namespace:  "filkompedia_be",
 			Name:       "request_duration_summary_seconds",
 			Help:       "Request duration in seconds",
 			Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
@@ -62,8 +62,9 @@ func Start() Metrics {
 	pMux.Handle("/metrics", promHandler)
 
 	go func() {
-		log.Println("Starting prometheus exporter on port 3001")
-		if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PROMETHEUS_EXPORTER_PORT")), pMux); err != nil {
+		port := os.Getenv("PROMETHEUS_EXPORTER_PORT")
+		log.Printf("Starting prometheus exporter on port %s", port)
+		if err := http.ListenAndServe(fmt.Sprintf(":%s", port), pMux); err != nil {
 			log.Fatal("Error when running prometheus exporter, error: " + err.Error())
 		}
 	}()

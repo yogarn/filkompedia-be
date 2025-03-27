@@ -11,5 +11,4 @@ scrape_configs:
   - job_name: filkompedia
     static_configs:
       - targets:
-          - filkompedia:3000
-          - filkompedia:3001
+          - filkompedia_be:3001

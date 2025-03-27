@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type IBookRepository interface {
@@ -36,6 +38,9 @@ func (r *BookRepository) GetBooks(books *[]entity.Book, page, pageSize int) erro
 	offset := (page - 1) * pageSize
 	query := `SELECT * FROM books ORDER BY release_date DESC LIMIT $1 OFFSET $2`
 	err := r.db.Select(books, query, pageSize, offset)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.BookNotFound
+	}
 	return err
 }
 
@@ -59,12 +64,18 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 		LIMIT $2 OFFSET $3`
 	searchPattern := "%" + searchQuery + "%"
 	err := r.db.Select(books, query, searchPattern, pageSize, offset)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.BookNotFound
+	}
 	return err
 }
 
 func (r *BookRepository) GetBook(book *entity.Book, bookId uuid.UUID) error {
 	query := `SELECT * FROM books WHERE id = $1 LIMIT 1`
 	err := r.db.Get(book, query, bookId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.BookNotFound
+	}
 	return err
 }
 
@@ -88,7 +99,7 @@ func (r *BookRepository) DeleteBook(bookId uuid.UUID) error {
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("no rows deleted")
+		return &response.BookNotFound
 	}
 
 	return nil

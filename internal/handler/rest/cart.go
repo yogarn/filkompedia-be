@@ -76,6 +76,25 @@ func (r *Rest) AddToCart(ctx *fiber.Ctx) error {
 	return nil
 }
 
+func (r *Rest) EditCart(ctx *fiber.Ctx) error {
+	var edit model.EditCart
+	if err := ctx.BodyParser(&edit); err != nil {
+		return err
+	}
+
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	if err := r.service.CartService.EditCart(edit, userId); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}
+
 func (r *Rest) RemoveFromCart(ctx *fiber.Ctx) error {
 	param := ctx.Params("cartId")
 	cartId, err := uuid.Parse(param)

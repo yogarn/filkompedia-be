@@ -5,6 +5,7 @@ import (
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type ICartService interface {
@@ -12,6 +13,7 @@ type ICartService interface {
 	GetCart(cart *entity.Cart, cartId uuid.UUID) error
 	AddToCart(add model.AddToCart, userId uuid.UUID) error
 	RemoveFromCart(cartId uuid.UUID) error
+	EditCart(edit model.EditCart, userId uuid.UUID) error
 }
 
 type CartService struct {
@@ -53,6 +55,19 @@ func (s *CartService) AddToCart(add model.AddToCart, userId uuid.UUID) error {
 	}
 
 	return s.cartRepo.AddToCart(&user, &book, add.Amount)
+}
+
+func (s *CartService) EditCart(edit model.EditCart, userId uuid.UUID) error {
+	var cart entity.Cart
+	if err := s.cartRepo.GetCart(&cart, edit.CartId); err != nil {
+		return err
+	}
+
+	if cart.UserId != userId {
+		return &response.Unauthorized
+	}
+
+	return s.cartRepo.EditCart(&cart, edit.Amount)
 }
 
 func (s *CartService) RemoveFromCart(cartId uuid.UUID) error {

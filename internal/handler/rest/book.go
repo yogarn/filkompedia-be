@@ -53,3 +53,18 @@ func (r *Rest) CreateBook(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) DeleteBook(ctx *fiber.Ctx) error {
+	bookIdString := ctx.Params("id")
+	bookId, err := uuid.Parse(bookIdString)
+	if err != nil {
+		return err
+	}
+
+	if err := r.service.BookService.DeleteBook(bookId); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}

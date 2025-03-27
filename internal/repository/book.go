@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
@@ -11,6 +13,7 @@ type IBookRepository interface {
 	SearchBooks(books *[]entity.Book, page, pageSize int, searchQuery string) error
 	GetBook(book *entity.Book, bookId uuid.UUID) error
 	CreateBook(book *entity.Book) error
+	DeleteBook(bookId uuid.UUID) error
 }
 
 type BookRepository struct {
@@ -69,4 +72,24 @@ func (r *BookRepository) CreateBook(book *entity.Book) error {
 	query := `INSERT INTO books (id, title, description, author, release_date, price) VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := r.db.Exec(query, book.Id, book.Title, book.Description, book.Author, book.ReleaseDate, book.Price)
 	return err
+}
+
+func (r *BookRepository) DeleteBook(bookId uuid.UUID) error {
+	query := `DELETE FROM books WHERE id = $1`
+	result, err := r.db.Exec(query, bookId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("no rows deleted")
+	}
+
+	return nil
 }

@@ -11,6 +11,7 @@ type IBookService interface {
 	GetBook(bookId uuid.UUID) (*model.BookResponse, error)
 	SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error)
 	CreateBook(create *model.CreateBook) error
+	DeleteBook(bookId uuid.UUID) error
 }
 
 type BookService struct {
@@ -77,4 +78,17 @@ func (s *BookService) CreateBook(create *model.CreateBook) error {
 		ReleaseDate: create.ReleaseDate,
 		Price:       create.Price,
 	})
+}
+
+func (s *BookService) DeleteBook(bookId uuid.UUID) error {
+	var book entity.Book
+	if err := s.bookRepo.GetBook(&book, bookId); err != nil {
+		return err
+	}
+
+	if err := s.bookRepo.DeleteBook(bookId); err != nil {
+		return err
+	}
+
+	return nil
 }

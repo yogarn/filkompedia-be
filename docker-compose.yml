@@ -27,6 +27,13 @@ services:
     networks:
       - filkompedia
 
+  prometheus:
+      image: prom/prometheus:latest
+      ports:
+        - ${PROMETHEUS_PORT}:9090
+      volumes:
+        - ./pkg/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        
   filkompedia_be:
     container_name: "filkompedia-be"
     build:
@@ -41,6 +48,7 @@ services:
       - DB_PASS=${DB_PASS}
     ports:
       - "${PORT}:${PORT}"
+      - "${PROMETHEUS_EXPORTER_PORT}:${PROMETHEUS_EXPORTER_PORT}"
     networks:
       - filkompedia
     depends_on:

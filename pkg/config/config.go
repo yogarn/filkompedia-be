@@ -16,6 +16,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
 	"github.com/yogarn/filkompedia-be/pkg/middleware"
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
+	monitoring "github.com/yogarn/filkompedia-be/pkg/prometheus"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
 )
 
@@ -32,6 +33,9 @@ func LoadEnv() {
 }
 
 func StartUp(config *Config) {
+	promMetrics := monitoring.Start()
+	config.App.Use(middleware.PromMiddleware(promMetrics))
+
 	bcrypt := bcrypt.Init()
 	jwt := jwt.Init()
 	smtp := smtp.LoadSMTPCredentials()

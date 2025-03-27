@@ -36,4 +36,6 @@ var (
 
 	Unauthorized     = NewErrorResponse(http.StatusUnauthorized, "Unauthorized access")
 	RoleUnauthorized = NewErrorResponse(http.StatusUnauthorized, "Insufficient role")
+
+	Forbidden = NewErrorResponse(http.StatusForbidden, "Forbidden access")
 )

@@ -34,3 +34,14 @@ type BookResponse struct {
 	ReleaseDate  string    `json:"release_date"`
 	Price        float64   `json:"price"`
 }
+
+type EditBook struct {
+	Id           uuid.UUID `json:"id" validate:"required"`
+	Title        string    `json:"title" validate:"omitempty,min=5"`
+	Description  string    `json:"description" validate:"omitempty,min=5"`
+	Introduction string    `json:"introduction" validate:"omitempty,min=5"`
+	Image        string    `json:"image" validate:"omitempty,url"`
+	Author       string    `json:"author" validate:"omitempty,min=5"`
+	ReleaseDate  string    `json:"release_date" validate:"omitempty"` //todo: make a time validator
+	Price        float64   `json:"price" validate:"omitempty,min=1"`
+}

@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
@@ -16,6 +17,7 @@ type IBookRepository interface {
 	GetBook(book *entity.Book, bookId uuid.UUID) error
 	CreateBook(book *entity.Book) error
 	DeleteBook(bookId uuid.UUID) error
+	EditBook(edit *model.EditBook) error
 }
 
 type BookRepository struct {
@@ -103,4 +105,21 @@ func (r *BookRepository) DeleteBook(bookId uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (r *BookRepository) EditBook(edit *model.EditBook) error {
+	query := `
+		UPDATE books 
+		SET title = :title,
+		    description = :description,
+		    introduction = :introduction,
+		    image = :image,
+		    author = :author,
+		    release_date = :release_date,
+		    price = :price
+		WHERE id = :id
+	`
+
+	_, err := r.db.NamedExec(query, edit)
+	return err
 }

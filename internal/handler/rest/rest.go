@@ -42,6 +42,7 @@ func mountBook(routerGroup fiber.Router, r *Rest) {
 	books.Get("/", r.middleware.Authenticate, r.SearchBooks)
 	books.Get("/:id", r.middleware.Authenticate, r.GetBook)
 	books.Post("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
+	books.Delete("/:id", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.DeleteBook)
 }
 
 func mountComment(routerGroup fiber.Router, r *Rest) {

@@ -14,6 +14,7 @@ type Profile struct {
 	Id       uuid.UUID `json:"id" db:"id"`
 	Username string    `json:"username" db:"username"`
 	Email    string    `json:"email" db:"email"`
+	RoleId   int       `json:"roleId" db:"role_id"`
 }
 
 func UserToProfile(user entity.User) Profile {
@@ -21,5 +22,6 @@ func UserToProfile(user entity.User) Profile {
 		Id:       user.Id,
 		Username: user.Username,
 		Email:    user.Email,
+		RoleId:   user.RoleId,
 	}
 }

@@ -53,7 +53,7 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 	}
 
 	if snapRes == nil {
-		return nil, errors.New("nill response")
+		return nil, errors.New("nil response")
 	}
 
 	token, err := uuid.Parse(snapRes.Token)

@@ -1,6 +1,9 @@
 package middleware
 
 import (
+	"encoding/json"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/yogarn/filkompedia-be/pkg/response"
@@ -8,6 +11,9 @@ import (
 
 func (m *middleware) LogrusMiddleware(ctx *fiber.Ctx) error {
 	start := ctx.Context().Time()
+
+	rawBody := string(ctx.Body())
+	sanitizedBody := sanitizeBody(rawBody)
 
 	err := ctx.Next()
 	statusCode, _ := response.GetErrorInfo(err)
@@ -19,13 +25,31 @@ func (m *middleware) LogrusMiddleware(ctx *fiber.Ctx) error {
 		"latency":   ctx.Context().Time().Sub(start),
 		"ip":        ctx.IP(),
 		"userAgent": ctx.Get("User-Agent"),
+		"body":      sanitizedBody,
 	})
 
-	if statusCode >= 200 && statusCode < 300 {
-		entry.Info("incoming request")
+	if err != nil {
+		entry.Error(err.Error())
 	} else {
-		entry.Error("error request")
+		entry.Info("incoming request")
 	}
 
 	return err
+}
+
+func sanitizeBody(body string) string {
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(body), &data); err == nil {
+		if _, exists := data["password"]; exists {
+			data["password"] = "***REDACTED***"
+		}
+		sanitized, _ := json.Marshal(data)
+		return string(sanitized)
+	}
+
+	if strings.Contains(body, `"password"`) {
+		return strings.ReplaceAll(body, `"password":"`, `"password":"***REDACTED***"`)
+	}
+
+	return body
 }

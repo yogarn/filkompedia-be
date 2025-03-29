@@ -17,6 +17,7 @@ type Metrics struct {
 	RequestTotal    *prometheus.CounterVec
 	Duration        *prometheus.HistogramVec
 	DurationSummary prometheus.Summary
+	ErrorCount      *prometheus.CounterVec
 }
 
 func PrometheusNewMetrics(reg prometheus.Registerer) *Metrics {
@@ -44,6 +45,11 @@ func PrometheusNewMetrics(reg prometheus.Registerer) *Metrics {
 			Help:       "Request duration in seconds",
 			Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001},
 		}),
+		ErrorCount: prometheus.NewCounterVec(prometheus.CounterOpts{
+			Namespace: "filkompedia_be",
+			Name:      "error_count",
+			Help:      "Number of error responses",
+		}, []string{"method", "response_code"}),
 	}
 
 	reg.MustRegister(m.Info, m.RequestTotal, m.Duration, m.DurationSummary)

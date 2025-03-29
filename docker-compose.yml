@@ -74,6 +74,8 @@ services:
       interval: 5s
       retries: 5
       timeout: 5s
+    volumes:
+      - ./logs:/app/logs
 
   filkompedia_fe:
     container_name: "filkompedia_fe"

@@ -7,6 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/midtrans/midtrans-go"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
@@ -18,7 +19,7 @@ func StartFiber() *fiber.App {
 	)
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173, https://filkompedia.yogarn.my.id",
+		AllowOrigins:     "http://localhost:5173, https://filkompedia.yogarn.my.id, https://api.sandbox.midtrans.com",
 		AllowCredentials: true,
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
@@ -33,6 +34,12 @@ func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
 	message := "Internal Server Error"
 
 	fmt.Println(err.Error())
+
+	var midtransErr *midtrans.Error
+	if errors.As(err, &midtransErr) {
+		code = fiber.StatusBadRequest
+		message = midtransErr.Error()
+	}
 
 	var errorRequest *response.ErrorResponse
 	if errors.As(err, &errorRequest) {

@@ -15,19 +15,22 @@ type IPaymentService interface {
 	GetPayment(paymentId uuid.UUID) (*entity.Payment, error)
 	CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, totalPrice float64) (*snap.Response, error)
 	UpdatePaymentStatus(PaymentDetails map[string]any) error
+	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
 }
 
 type PaymentService struct {
 	paymentRepo repository.IPaymentRepository
 	userRepo    repository.IUserRepository
+	bookRepo    repository.IBookRepository
 	midtrans    midtrans.IMidtrans
 }
 
-func NewPaymentService(paymentRepo repository.IPaymentRepository, midtrans midtrans.IMidtrans, userRepo repository.IUserRepository) IPaymentService {
+func NewPaymentService(paymentRepo repository.IPaymentRepository, midtrans midtrans.IMidtrans, userRepo repository.IUserRepository, bookRepo repository.IBookRepository) IPaymentService {
 	return &PaymentService{
 		paymentRepo: paymentRepo,
 		midtrans:    midtrans,
 		userRepo:    userRepo,
+		bookRepo:    bookRepo,
 	}
 }
 
@@ -119,4 +122,18 @@ func (s *PaymentService) UpdatePaymentStatus(PaymentDetails map[string]any) erro
 	}
 
 	return nil
+}
+
+func (s *PaymentService) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error) {
+	var book entity.Book
+	if err := s.bookRepo.GetBook(&book, bookId); err != nil {
+		return nil, err
+	}
+
+	var user entity.User
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
+		return nil, err
+	}
+
+	return s.paymentRepo.CheckUserBookPurchase(userId, bookId)
 }

@@ -84,6 +84,7 @@ func mountPayment(routerGroup fiber.Router, r *Rest) {
 
 	payments.Post("/webhook", r.HandleMidtransWebhook)
 	payments.Get("/:id", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetPayement)
+	payments.Get("/book/:id", r.middleware.Authenticate, r.CheckUserBookPurchase)
 }
 
 func (r *Rest) RegisterRoutes() {

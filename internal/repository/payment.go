@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -14,7 +15,7 @@ type IPaymentRepository interface {
 	GetPayment(paymentId uuid.UUID) (*entity.Payment, error)
 	CreatePayment(payment entity.Payment) error
 	UpdatePaymentStatus(statusId int, paymentId uuid.UUID) error
-	//CheckUserBookPurchase()
+	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
 }
 
 type PaymentRepository struct {
@@ -28,7 +29,7 @@ func NewPaymentRepository(db *sqlx.DB) IPaymentRepository {
 func (r *PaymentRepository) GetPayment(paymentId uuid.UUID) (*entity.Payment, error) {
 	var payment entity.Payment
 	query := `SELECT * FROM payments WHERE id = $1 LIMIT 1`
-	err := r.db.Get(payment, query, paymentId)
+	err := r.db.Get(&payment, query, paymentId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, &response.PaymentNotFound
@@ -51,4 +52,23 @@ func (r *PaymentRepository) UpdatePaymentStatus(statusId int, paymentId uuid.UUI
 	query := `UPDATE payments SET status_id = $1 WHERE id = $2`
 	_, err := r.db.Exec(query, statusId, paymentId)
 	return err
+}
+
+func (r *PaymentRepository) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error) {
+	var exists bool
+	query := `
+		SELECT EXISTS (
+			SELECT 1 FROM payments
+			INNER JOIN checkouts ON payments.checkout_id = checkouts.id
+			INNER JOIN carts ON checkouts.id = carts.checkout_id
+			WHERE payments.user_id = $1 AND carts.book_id = $2 AND payments.status_id = 1
+		)
+	`
+	err := r.db.Get(&exists, query, userId, bookId)
+	fmt.Println(exists)
+	if err != nil {
+		return nil, err
+	}
+
+	return &exists, nil
 }

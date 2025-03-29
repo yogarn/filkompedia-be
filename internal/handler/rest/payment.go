@@ -37,3 +37,24 @@ func (r *Rest) GetPayement(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", payment)
 	return nil
 }
+
+func (r *Rest) CheckUserBookPurchase(ctx *fiber.Ctx) error {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	bookIdString := ctx.Params("id")
+	bookId, err := uuid.Parse(bookIdString)
+	if err != nil {
+		return err
+	}
+
+	purchase, err := r.service.PaymentService.CheckUserBookPurchase(userId, bookId)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", purchase)
+	return nil
+}

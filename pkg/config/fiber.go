@@ -1,10 +1,6 @@
 package config
 
 import (
-	"errors"
-	"fmt"
-
-	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/midtrans/midtrans-go"
@@ -30,34 +26,9 @@ func StartFiber() *fiber.App {
 }
 
 func CustomErrorHandler(ctx *fiber.Ctx, err error) error {
-	code := fiber.StatusInternalServerError
-	message := "Internal Server Error"
+	code, message := response.GetErrorInfo(err)
 
-	fmt.Println(err.Error())
-
-	var midtransErr *midtrans.Error
-	if errors.As(err, &midtransErr) {
-		code = fiber.StatusBadRequest
-		message = midtransErr.Error()
-	}
-
-	var errorRequest *response.ErrorResponse
-	if errors.As(err, &errorRequest) {
-		code = errorRequest.Code
-		message = errorRequest.Error()
-	}
-
-	var fiberError *fiber.Error
-	if errors.As(err, &fiberError) {
-		code = fiberError.Code
-	}
-
-	var validationError validator.ValidationErrors
-	if errors.As(err, &validationError) {
-		code = fiber.StatusBadRequest
-		message = "Bad Request"
-	}
-
+	ctx.Status(code)
 	response.Error(ctx, code, message, err)
 
 	return nil

@@ -38,5 +38,6 @@ var (
 	InvalidCredentials = NewErrorResponse(http.StatusUnauthorized, "Invalid credentials")
 
 	Unauthorized     = NewErrorResponse(http.StatusUnauthorized, "Unauthorized access")
-	RoleUnauthorized = NewErrorResponse(http.StatusUnauthorized, "Insufficient role")
+	RoleUnauthorized = NewErrorResponse(http.StatusForbidden, "Insufficient role")
+	Forbidden = NewErrorResponse(http.StatusForbidden, "Forbidden access")
 )

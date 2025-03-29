@@ -41,8 +41,8 @@ func (m *Midtrans) NewTransactionToken(orderId string, amount int64, user *entit
 
 	snapResp, err := m.Client.CreateTransaction(req)
 	var midtransErr *midtrans.Error
-	if errors.As(err, &midtransErr) && midtransErr != nil {
-		return nil, err
+	if errors.As(err, &midtransErr) && midtransErr == nil {
+		return snapResp, nil
 	}
-	return snapResp, nil
+	return snapResp, err
 }

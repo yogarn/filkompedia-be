@@ -5,21 +5,26 @@ import (
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type IBookService interface {
 	GetBook(bookId uuid.UUID) (*model.BookResponse, error)
 	SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error)
 	CreateBook(create *model.CreateBook) error
+	DeleteBook(bookId uuid.UUID) error
+	EditBook(edit model.EditBook) error
 }
 
 type BookService struct {
 	bookRepo repository.IBookRepository
+	cartRepo repository.ICartRepository
 }
 
-func NewBookService(bookRepo repository.IBookRepository) IBookService {
+func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository) IBookService {
 	return &BookService{
 		bookRepo: bookRepo,
+		cartRepo: cartRepo,
 	}
 }
 
@@ -77,4 +82,58 @@ func (s *BookService) CreateBook(create *model.CreateBook) error {
 		ReleaseDate: create.ReleaseDate,
 		Price:       create.Price,
 	})
+}
+
+func (s *BookService) DeleteBook(bookId uuid.UUID) error {
+	var book entity.Book
+	if err := s.bookRepo.GetBook(&book, bookId); err != nil {
+		return err
+	}
+
+	err := s.cartRepo.DeleteCartByBook(bookId)
+	if err != nil && err != &response.CartNotFound {
+		return err
+	}
+
+	if err := s.bookRepo.DeleteBook(bookId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BookService) EditBook(edit model.EditBook) error {
+	var book entity.Book
+	if err := s.bookRepo.GetBook(&book, edit.Id); err != nil {
+		return err
+	}
+
+	//todo improve this
+	if edit.Title == "" {
+		edit.Title = book.Title
+	}
+	if edit.Description == "" {
+		edit.Description = book.Description
+	}
+	if edit.Introduction == "" {
+		edit.Introduction = book.Introduction
+	}
+	if edit.Image == "" {
+		edit.Image = book.Image
+	}
+	if edit.Author == "" {
+		edit.Author = book.Author
+	}
+	if edit.ReleaseDate == "" {
+		edit.ReleaseDate = book.ReleaseDate
+	}
+	if edit.Price == 0 {
+		edit.Price = book.Price
+	}
+
+	if err := s.bookRepo.EditBook(&edit); err != nil {
+		return err
+	}
+
+	return nil
 }

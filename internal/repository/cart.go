@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type ICartRepository interface {
@@ -14,6 +16,7 @@ type ICartRepository interface {
 	AddToCart(user *entity.User, book *entity.Book, amount int) error
 	RemoveFromCart(cartId uuid.UUID) error
 	EditCart(cart *entity.Cart, amount int) error
+	DeleteCartByBook(bookId uuid.UUID) error
 }
 
 type CartRepository struct {
@@ -29,12 +32,18 @@ func NewCartRepository(db *sqlx.DB) ICartRepository {
 func (r *CartRepository) GetUserCart(carts *[]entity.Cart, user *entity.User) error {
 	query := `SELECT * FROM carts WHERE user_id = $1 AND checkout_id IS NULL`
 	err := r.db.Select(carts, query, user.Id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.CartNotFound
+	}
 	return err
 }
 
 func (r *CartRepository) GetCart(cart *entity.Cart, cartId uuid.UUID) error {
 	query := `SELECT * FROM carts WHERE id = $1`
 	err := r.db.Get(cart, query, cartId)
+	if errors.Is(err, sql.ErrNoRows) {
+		return &response.CartNotFound
+	}
 	return err
 }
 
@@ -93,4 +102,23 @@ func (r *CartRepository) addAmount(cartId uuid.UUID, amount int) error {
 	query := `UPDATE carts SET amount = amount + $1 WHERE id = $2`
 	_, err := r.db.Exec(query, amount, cartId)
 	return err
+}
+
+func (r *CartRepository) DeleteCartByBook(bookId uuid.UUID) error {
+	query := `DELETE FROM carts WHERE book_id = $1 AND checkout_id IS NULL`
+	result, err := r.db.Exec(query, bookId)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.CartNotFound
+	}
+
+	return nil
 }

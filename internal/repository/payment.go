@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -65,7 +64,6 @@ func (r *PaymentRepository) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.
 		)
 	`
 	err := r.db.Get(&exists, query, userId, bookId)
-	fmt.Println(exists)
 	if err != nil {
 		return nil, err
 	}

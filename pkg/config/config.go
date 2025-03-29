@@ -14,6 +14,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/service"
 	"github.com/yogarn/filkompedia-be/pkg/bcrypt"
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
+	"github.com/yogarn/filkompedia-be/pkg/logger"
 	"github.com/yogarn/filkompedia-be/pkg/middleware"
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	monitoring "github.com/yogarn/filkompedia-be/pkg/prometheus"
@@ -33,18 +34,20 @@ func LoadEnv() {
 }
 
 func StartUp(config *Config) {
-	promMetrics := monitoring.Start()
-	config.App.Use(middleware.PromMiddleware(promMetrics))
-
 	bcrypt := bcrypt.Init()
 	jwt := jwt.Init()
 	smtp := smtp.LoadSMTPCredentials()
 	midtrans := midtrans.NewMidtrans()
+	promMetrics := monitoring.Start()
+	logrus := logger.SetupLogger()
 
 	repository := repository.NewRepository(config.DB, config.Redis)
 	service := service.NewService(repository, bcrypt, jwt, smtp, midtrans)
 
-	middleware := middleware.Init(jwt, service)
+	middleware := middleware.Init(jwt, service, promMetrics, logrus)
+
+	config.App.Use(middleware.PromMiddleware)
+	config.App.Use(middleware.LogrusMiddleware)
 
 	rest := rest.NewRest(config.App, service, middleware)
 	rest.RegisterRoutes()

@@ -33,4 +33,8 @@ postgres_data/
 # redis data
 redis_data/
 
+#grafana
 /grafana
+
+#logs
+/logs

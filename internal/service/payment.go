@@ -39,7 +39,7 @@ func (s *PaymentService) GetPayment(paymentId uuid.UUID) (*entity.Payment, error
 }
 
 func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, totalPrice float64) (*snap.Response, error) {
-	orderId := uuid.New()
+	paymentId := uuid.New()
 
 	var user entity.User
 	if err := s.userRepo.GetUser(&user, userId); err != nil {
@@ -47,7 +47,7 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 	}
 
 	var snapRes *snap.Response
-	snapRes, err := s.midtrans.NewTransactionToken(orderId.String(), int64(totalPrice), &user)
+	snapRes, err := s.midtrans.NewTransactionToken(paymentId.String(), int64(totalPrice), &user)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 	}
 
 	if err := s.paymentRepo.CreatePayment(entity.Payment{
-		Id:         orderId,
+		Id:         paymentId,
 		Token:      token,
 		UserId:     userId,
 		CheckoutId: checkoutId,
@@ -77,9 +77,14 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 }
 
 func (s *PaymentService) UpdatePaymentStatus(PaymentDetails map[string]any) error {
-	paymentId, ok := PaymentDetails["order_id"].(uuid.UUID)
+	paymentIDs, ok := PaymentDetails["order_id"].(string)
 	if !ok {
 		return errors.New("invalid payment details")
+	}
+
+	paymentId, err := uuid.Parse(paymentIDs)
+	if err != nil {
+		return err
 	}
 
 	if payment, err := s.paymentRepo.GetPayment(paymentId); err != nil || payment == nil {

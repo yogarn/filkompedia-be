@@ -8,6 +8,7 @@ INSERT INTO payment_status (id, status) VALUES (1, 'accepted');
 INSERT INTO payment_status (id, status) VALUES (2, 'deny');
 INSERT INTO payment_status (id, status) VALUES (3, 'failed');
 INSERT INTO payment_status (id, status) VALUES (4, 'challenge');
+INSERT INTO payment_status (id, status) VALUES (5, 'settlement');
 
 CREATE TABLE payments (
     id VARCHAR(36) PRIMARY KEY,

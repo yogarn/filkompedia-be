@@ -79,6 +79,14 @@ func mountCheckout(routerGroup fiber.Router, r *Rest) {
 	checkouts.Post("/", r.Checkout)
 }
 
+func mountPayment(routerGroup fiber.Router, r *Rest) {
+	payments := routerGroup.Group("/payments")
+
+	payments.Post("/webhook", r.HandleMidtransWebhook)
+	payments.Get("/:id", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetPayement)
+	payments.Get("/book/:id", r.middleware.Authenticate, r.CheckUserBookPurchase)
+}
+
 func (r *Rest) RegisterRoutes() {
 	routerGroup := r.router.Group("/api/v1")
 
@@ -92,6 +100,7 @@ func (r *Rest) RegisterRoutes() {
 	mountComment(routerGroup, r)
 	mountCart(routerGroup, r)
 	mountCheckout(routerGroup, r)
+	mountPayment(routerGroup, r)
 }
 
 func (r *Rest) Start(port string) error {

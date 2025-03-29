@@ -73,9 +73,11 @@ func (r *Rest) Checkout(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	//handle payments
+	snapRes, err := r.service.PaymentService.CreatePayment(userId, checkoutId, totalPrice)
+	if err != nil {
+		return err
+	}
 
-	response.Success(ctx, http.StatusOK, "success", totalPrice) //payment details
-
+	response.Success(ctx, http.StatusOK, "success", snapRes)
 	return nil
 }

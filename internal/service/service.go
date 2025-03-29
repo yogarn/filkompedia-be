@@ -15,6 +15,7 @@ type Service struct {
 	CartService     ICartService
 	CommentService  ICommentService
 	CheckoutService ICheckoutService
+	PaymentService  IPaymentService
 }
 
 func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient, midtrans midtrans.IMidtrans) *Service {
@@ -25,5 +26,6 @@ func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jw
 		CartService:     NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),
 		CommentService:  NewCommentService(repository.CommentRepository, repository.UserRepository),
 		CheckoutService: NewCheckoutService(repository.CheckoutRepository, repository.CartRepository, repository.BookRepository),
+		PaymentService:  NewPaymentService(repository.PaymentRepository, midtrans, repository.UserRepository, repository.BookRepository),
 	}
 }

@@ -50,10 +50,19 @@ func (s *CheckoutService) GetCheckoutCarts(checkoutId uuid.UUID) (*[]entity.Cart
 }
 
 func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, userId uuid.UUID, checkoutId uuid.UUID) (totalPrice float64, err error) {
+	var user entity.User
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
+		return 0, err
+	}
+
 	for _, cart_id := range checkoutReq.CartsId {
 		var cart entity.Cart
 		if err := s.cartRepo.GetCart(&cart, cart_id); err != nil {
 			return 0, err
+		}
+
+		if cart.CheckoutId != uuid.Nil {
+			return 0, errors.New("invalid input at " + cart_id.String() + " where it's already being checked out")
 		}
 
 		var book entity.Book
@@ -62,7 +71,7 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, userId uui
 		}
 
 		if cart.UserId != userId {
-			return 0, errors.New("invalid input at " + cart_id.String())
+			return 0, errors.New("invalid input at " + cart_id.String() + " where it's not belong to the user")
 		}
 
 		totalPrice += (float64(cart.Amount) * book.Price)

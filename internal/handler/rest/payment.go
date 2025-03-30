@@ -23,7 +23,7 @@ func (r *Rest) HandleMidtransWebhook(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (r *Rest) GetPayement(ctx *fiber.Ctx) error {
+func (r *Rest) GetPayment(ctx *fiber.Ctx) error {
 	paymentIdString := ctx.Params("id")
 	paymentId, err := uuid.Parse(paymentIdString)
 	if err != nil {
@@ -74,7 +74,7 @@ func (r *Rest) GetPayments(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (r *Rest) GetPayementByCheckout(ctx *fiber.Ctx) error {
+func (r *Rest) GetPaymentByCheckout(ctx *fiber.Ctx) error {
 	checkoutIdString := ctx.Params("id")
 	checkoutId, err := uuid.Parse(checkoutIdString)
 	if err != nil {

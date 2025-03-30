@@ -75,12 +75,15 @@ func (s *BookService) SearchBooks(bookSearch model.BookSearch) (*[]model.BookRes
 
 func (s *BookService) CreateBook(create *model.CreateBook) error {
 	return s.bookRepo.CreateBook(&entity.Book{
-		Id:          uuid.New(),
-		Title:       create.Title,
-		Description: create.Description,
-		Author:      create.Author,
-		ReleaseDate: create.ReleaseDate,
-		Price:       create.Price,
+		Id:           uuid.New(),
+		Title:        create.Title,
+		Description:  create.Description,
+		Author:       create.Author,
+		ReleaseDate:  create.ReleaseDate,
+		Price:        create.Price,
+		Introduction: create.Introduction,
+		Image:        create.Image,
+		File:         create.File,
 	})
 }
 

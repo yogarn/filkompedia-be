@@ -82,8 +82,8 @@ func (r *BookRepository) GetBook(book *entity.Book, bookId uuid.UUID) error {
 }
 
 func (r *BookRepository) CreateBook(book *entity.Book) error {
-	query := `INSERT INTO books (id, title, description, author, release_date, price) VALUES ($1, $2, $3, $4, $5, $6)`
-	_, err := r.db.Exec(query, book.Id, book.Title, book.Description, book.Author, book.ReleaseDate, book.Price)
+	query := `INSERT INTO books (id, title, description, author, release_date, price, introduction, image, file) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+	_, err := r.db.Exec(query, book.Id, book.Title, book.Description, book.Author, book.ReleaseDate, book.Price, book.Introduction, book.Image, book.File)
 	return err
 }
 

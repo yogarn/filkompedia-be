@@ -15,6 +15,7 @@ type IPaymentRepository interface {
 	CreatePayment(payment entity.Payment) error
 	UpdatePaymentStatus(statusId int, paymentId uuid.UUID) error
 	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
+	GetPayments(page, pageSize int) ([]entity.Payment, error)
 }
 
 type PaymentRepository struct {
@@ -69,4 +70,25 @@ func (r *PaymentRepository) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.
 	}
 
 	return &exists, nil
+}
+
+func (r *PaymentRepository) GetPayments(page, pageSize int) ([]entity.Payment, error) {
+	if page < 1 {
+		page = 1
+	}
+
+	if pageSize < 1 {
+		pageSize = 10
+	}
+
+	offset := (page - 1) * pageSize
+	query := `SELECT * FROM payments ORDER BY created_at DESC LIMIT $1 OFFSET $2`
+	var payments []entity.Payment
+
+	err := r.db.Select(&payments, query, pageSize, offset)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, &response.PaymentNotFound
+	}
+
+	return payments, err
 }

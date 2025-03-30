@@ -63,10 +63,20 @@ func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount 
 }
 
 func (r *CartRepository) EditCart(cart *entity.Cart, amount int) error {
-	if cart.Amount+amount <= 0 {
-		return r.RemoveFromCart(cart.Id)
-	} else if cart.Amount+amount > 0 {
-		return r.addAmount(cart.Id, amount)
+	query := `UPDATE carts SET amount = $1 WHERE id = $2`
+	result, err := r.db.Exec(query, amount, cart.Id)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.CartNotFound
 	}
 
 	return nil

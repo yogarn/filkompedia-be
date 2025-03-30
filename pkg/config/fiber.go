@@ -3,7 +3,6 @@ package config
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/midtrans/midtrans-go"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 

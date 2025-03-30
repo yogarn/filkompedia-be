@@ -67,6 +67,10 @@ func (s *CartService) EditCart(edit model.EditCart, userId uuid.UUID) error {
 		return &response.Unauthorized
 	}
 
+	if edit.Amount < 1 {
+		return &response.BadRequest
+	}
+
 	return s.cartRepo.EditCart(&cart, edit.Amount)
 }
 

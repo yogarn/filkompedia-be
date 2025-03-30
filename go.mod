@@ -14,7 +14,9 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/midtrans/midtrans-go v1.3.8
 	github.com/prometheus/client_golang v1.21.1
+	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/crypto v0.36.0
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
@@ -35,7 +37,6 @@ require (
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
@@ -44,5 +45,4 @@ require (
 	golang.org/x/text v0.23.0 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )

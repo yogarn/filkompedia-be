@@ -32,6 +32,8 @@ var (
 
 	UserUnverified = NewErrorResponse(http.StatusForbidden, "User is not verified")
 
+	BadRequest = NewErrorResponse(http.StatusBadRequest, "Bad request")
+
 	InvalidToken       = NewErrorResponse(http.StatusUnauthorized, "Token invalid")
 	InvalidOTP         = NewErrorResponse(http.StatusUnauthorized, "OTP invalid")
 	ExpiredToken       = NewErrorResponse(http.StatusUnauthorized, "Expired token")
@@ -39,5 +41,5 @@ var (
 
 	Unauthorized     = NewErrorResponse(http.StatusUnauthorized, "Unauthorized access")
 	RoleUnauthorized = NewErrorResponse(http.StatusForbidden, "Insufficient role")
-	Forbidden = NewErrorResponse(http.StatusForbidden, "Forbidden access")
+	Forbidden        = NewErrorResponse(http.StatusForbidden, "Forbidden access")
 )

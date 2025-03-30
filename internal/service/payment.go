@@ -18,6 +18,8 @@ type IPaymentService interface {
 	UpdatePaymentStatus(PaymentDetails map[string]any) error
 	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
 	GetPayments(req model.PaymentReq) ([]entity.Payment, error)
+	GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error)
+	GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error)
 }
 
 type PaymentService struct {
@@ -25,14 +27,16 @@ type PaymentService struct {
 	userRepo    repository.IUserRepository
 	bookRepo    repository.IBookRepository
 	midtrans    midtrans.IMidtrans
+	chekoutRepo repository.ICheckoutRepository
 }
 
-func NewPaymentService(paymentRepo repository.IPaymentRepository, midtrans midtrans.IMidtrans, userRepo repository.IUserRepository, bookRepo repository.IBookRepository) IPaymentService {
+func NewPaymentService(paymentRepo repository.IPaymentRepository, midtrans midtrans.IMidtrans, userRepo repository.IUserRepository, bookRepo repository.IBookRepository, chekoutRepo repository.ICheckoutRepository) IPaymentService {
 	return &PaymentService{
 		paymentRepo: paymentRepo,
 		midtrans:    midtrans,
 		userRepo:    userRepo,
 		bookRepo:    bookRepo,
+		chekoutRepo: chekoutRepo,
 	}
 }
 
@@ -147,4 +151,22 @@ func (s *PaymentService) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUI
 
 func (s *PaymentService) GetPayments(req model.PaymentReq) ([]entity.Payment, error) {
 	return s.paymentRepo.GetPayments(req.Page, req.PageSize)
+}
+
+func (s *PaymentService) GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error) {
+	_, err := s.chekoutRepo.GetCheckout(checkoutId)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.paymentRepo.GetPaymentByCheckout(checkoutId)
+}
+
+func (s *PaymentService) GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error) {
+	var user entity.User
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
+		return nil, err
+	}
+
+	return s.paymentRepo.GetPaymentByUser(userId)
 }

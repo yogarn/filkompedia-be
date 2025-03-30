@@ -16,6 +16,8 @@ type IPaymentRepository interface {
 	UpdatePaymentStatus(statusId int, paymentId uuid.UUID) error
 	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
 	GetPayments(page, pageSize int) ([]entity.Payment, error)
+	GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error)
+	GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error)
 }
 
 type PaymentRepository struct {
@@ -91,4 +93,30 @@ func (r *PaymentRepository) GetPayments(page, pageSize int) ([]entity.Payment, e
 	}
 
 	return payments, err
+}
+
+func (r *PaymentRepository) GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error) {
+	var payment entity.Payment
+	query := `SELECT * FROM payments WHERE checkout_id = $1 LIMIT 1`
+	err := r.db.Get(&payment, query, checkoutId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, &response.PaymentNotFound
+		}
+		return nil, err
+	}
+	return &payment, err
+}
+
+func (r *PaymentRepository) GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error) {
+	var payment []entity.Payment
+	query := `SELECT * FROM payments WHERE user_id = $1 LIMIT 1`
+	err := r.db.Select(&payment, query, userId)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, &response.PaymentNotFound
+		}
+		return nil, err
+	}
+	return &payment, err
 }

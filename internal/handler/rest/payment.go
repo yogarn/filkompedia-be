@@ -23,7 +23,7 @@ func (r *Rest) HandleMidtransWebhook(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (r *Rest) GetPayement(ctx *fiber.Ctx) error {
+func (r *Rest) GetPayment(ctx *fiber.Ctx) error {
 	paymentIdString := ctx.Params("id")
 	paymentId, err := uuid.Parse(paymentIdString)
 	if err != nil {
@@ -68,6 +68,38 @@ func (r *Rest) GetPayments(ctx *fiber.Ctx) error {
 	payments, err := r.service.PaymentService.GetPayments(req)
 	if err != nil {
 		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", payments)
+	return nil
+}
+
+func (r *Rest) GetPaymentByCheckout(ctx *fiber.Ctx) error {
+	checkoutIdString := ctx.Params("id")
+	checkoutId, err := uuid.Parse(checkoutIdString)
+	if err != nil {
+		return err
+	}
+
+	payment, err := r.service.PaymentService.GetPaymentByCheckout(checkoutId)
+	if err != nil {
+		return nil
+	}
+
+	response.Success(ctx, http.StatusOK, "success", payment)
+	return nil
+}
+
+func (r *Rest) GetPaymentByUser(ctx *fiber.Ctx) error {
+	param := ctx.Params("id")
+	userId, err := uuid.Parse(param)
+	if err != nil {
+		return err
+	}
+
+	payments, err := r.service.PaymentService.GetPaymentByUser(userId)
+	if err != nil {
+		return nil
 	}
 
 	response.Success(ctx, http.StatusOK, "success", payments)

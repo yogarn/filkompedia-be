@@ -19,6 +19,7 @@ type IPaymentService interface {
 	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
 	GetPayments(req model.PaymentReq) ([]entity.Payment, error)
 	GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error)
+	GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error)
 }
 
 type PaymentService struct {
@@ -159,4 +160,13 @@ func (s *PaymentService) GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Pay
 	}
 
 	return s.paymentRepo.GetPaymentByCheckout(checkoutId)
+}
+
+func (s *PaymentService) GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error) {
+	var user entity.User
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
+		return nil, err
+	}
+
+	return s.paymentRepo.GetPaymentByUser(userId)
 }

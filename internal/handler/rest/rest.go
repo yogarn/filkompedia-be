@@ -87,6 +87,7 @@ func mountPayment(routerGroup fiber.Router, r *Rest) {
 	payments.Get("/book/:id", r.middleware.Authenticate, r.CheckUserBookPurchase)
 	payments.Get("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetPayments)
 	payments.Get("/checkout/:id", r.middleware.Authenticate, r.GetPayementByCheckout)
+	payments.Get("/user/:id", r.middleware.Authenticate, r.GetPaymentByUser)
 }
 
 func (r *Rest) RegisterRoutes() {

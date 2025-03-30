@@ -89,3 +89,19 @@ func (r *Rest) GetPayementByCheckout(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", payment)
 	return nil
 }
+
+func (r *Rest) GetPaymentByUser(ctx *fiber.Ctx) error {
+	param := ctx.Params("id")
+	userId, err := uuid.Parse(param)
+	if err != nil {
+		return err
+	}
+
+	payments, err := r.service.PaymentService.GetPaymentByUser(userId)
+	if err != nil {
+		return nil
+	}
+
+	response.Success(ctx, http.StatusOK, "success", payments)
+	return nil
+}

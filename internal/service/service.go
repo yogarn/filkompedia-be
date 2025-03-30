@@ -25,7 +25,7 @@ func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jw
 		BookService:     NewBookService(repository.BookRepository, repository.CartRepository),
 		CartService:     NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),
 		CommentService:  NewCommentService(repository.CommentRepository, repository.UserRepository),
-		CheckoutService: NewCheckoutService(repository.CheckoutRepository, repository.CartRepository, repository.BookRepository),
+		CheckoutService: NewCheckoutService(repository.CheckoutRepository, repository.CartRepository, repository.BookRepository, repository.UserRepository),
 		PaymentService:  NewPaymentService(repository.PaymentRepository, midtrans, repository.UserRepository, repository.BookRepository),
 	}
 }

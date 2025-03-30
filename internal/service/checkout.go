@@ -10,8 +10,8 @@ import (
 )
 
 type ICheckoutService interface {
-	GetUserCheckouts(userId uuid.UUID) ([]entity.Checkout, error)
-	GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart, error)
+	GetUserCheckouts(userId uuid.UUID) (*[]entity.Checkout, error)
+	GetCheckoutCarts(checkoutId uuid.UUID) (*[]entity.Cart, error)
 	Checkout(checkoutReq model.CheckoutRequest, userId uuid.UUID, checkoutId uuid.UUID) (float64, error)
 }
 
@@ -19,21 +19,28 @@ type CheckoutService struct {
 	checkoutRepo repository.ICheckoutRepository
 	cartRepo     repository.ICartRepository
 	bookRepo     repository.IBookRepository
+	userRepo     repository.IUserRepository
 }
 
-func NewCheckoutService(checkoutRepo repository.ICheckoutRepository, cartRepo repository.ICartRepository, bookRepo repository.IBookRepository) ICheckoutService {
+func NewCheckoutService(checkoutRepo repository.ICheckoutRepository, cartRepo repository.ICartRepository, bookRepo repository.IBookRepository, userRepo repository.IUserRepository) ICheckoutService {
 	return &CheckoutService{
 		checkoutRepo: checkoutRepo,
 		cartRepo:     cartRepo,
 		bookRepo:     bookRepo,
+		userRepo:     userRepo,
 	}
 }
 
-func (s *CheckoutService) GetUserCheckouts(userId uuid.UUID) ([]entity.Checkout, error) {
+func (s *CheckoutService) GetUserCheckouts(userId uuid.UUID) (*[]entity.Checkout, error) {
+	var user entity.User
+	if err := s.userRepo.GetUser(&user, userId); err != nil {
+		return nil, err
+	}
+
 	return s.checkoutRepo.GetUserCheckouts(userId)
 }
 
-func (s *CheckoutService) GetCheckoutCarts(checkoutId uuid.UUID) ([]entity.Cart, error) {
+func (s *CheckoutService) GetCheckoutCarts(checkoutId uuid.UUID) (*[]entity.Cart, error) {
 	return s.checkoutRepo.GetCheckoutCarts(checkoutId)
 }
 

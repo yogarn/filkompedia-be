@@ -41,6 +41,11 @@ func (s *CheckoutService) GetUserCheckouts(userId uuid.UUID) (*[]entity.Checkout
 }
 
 func (s *CheckoutService) GetCheckoutCarts(checkoutId uuid.UUID) (*[]entity.Cart, error) {
+	_, err := s.checkoutRepo.GetCheckout(checkoutId)
+	if err != nil {
+		return nil, err
+	}
+
 	return s.checkoutRepo.GetCheckoutCarts(checkoutId)
 }
 

@@ -8,6 +8,7 @@ import (
 	"github.com/midtrans/midtrans-go/snap"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
+	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 )
 
@@ -16,6 +17,7 @@ type IPaymentService interface {
 	CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, totalPrice float64) (*snap.Response, error)
 	UpdatePaymentStatus(PaymentDetails map[string]any) error
 	CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUID) (*bool, error)
+	GetPayments(req model.PaymentReq) ([]entity.Payment, error)
 }
 
 type PaymentService struct {
@@ -141,4 +143,8 @@ func (s *PaymentService) CheckUserBookPurchase(userId uuid.UUID, bookId uuid.UUI
 	}
 
 	return s.paymentRepo.CheckUserBookPurchase(userId, bookId)
+}
+
+func (s *PaymentService) GetPayments(req model.PaymentReq) ([]entity.Payment, error) {
+	return s.paymentRepo.GetPayments(req.Page, req.PageSize)
 }

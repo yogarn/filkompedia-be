@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
@@ -56,5 +57,19 @@ func (r *Rest) CheckUserBookPurchase(ctx *fiber.Ctx) error {
 	}
 
 	response.Success(ctx, http.StatusOK, "success", purchase)
+	return nil
+}
+
+func (r *Rest) GetPayments(ctx *fiber.Ctx) error {
+	var req model.PaymentReq
+	req.Page = ctx.QueryInt("page", 1)
+	req.PageSize = ctx.QueryInt("size", 9)
+
+	payments, err := r.service.PaymentService.GetPayments(req)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", payments)
 	return nil
 }

@@ -24,11 +24,12 @@ func NewErrorResponse(code int, message string) ErrorResponse {
 var (
 	InternalServerError = NewErrorResponse(http.StatusInternalServerError, "Internal server error")
 
-	UserNotFound    = NewErrorResponse(http.StatusNotFound, "User not found")
-	CommentNotFound = NewErrorResponse(http.StatusNotFound, "Comment not found")
-	BookNotFound    = NewErrorResponse(http.StatusNotFound, "Book not found")
-	CartNotFound    = NewErrorResponse(http.StatusNotFound, "Cart not found")
-	PaymentNotFound = NewErrorResponse(http.StatusNotFound, "Payment not found")
+	UserNotFound     = NewErrorResponse(http.StatusNotFound, "User not found")
+	CommentNotFound  = NewErrorResponse(http.StatusNotFound, "Comment not found")
+	BookNotFound     = NewErrorResponse(http.StatusNotFound, "Book not found")
+	CartNotFound     = NewErrorResponse(http.StatusNotFound, "Cart not found")
+	CheckoutNotFound = NewErrorResponse(http.StatusNotFound, "Checkout not found")
+	PaymentNotFound  = NewErrorResponse(http.StatusNotFound, "Payment not found")
 
 	UserUnverified = NewErrorResponse(http.StatusForbidden, "User is not verified")
 

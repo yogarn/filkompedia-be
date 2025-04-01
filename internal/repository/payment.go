@@ -110,7 +110,7 @@ func (r *PaymentRepository) GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.
 
 func (r *PaymentRepository) GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error) {
 	var payment []entity.Payment
-	query := `SELECT * FROM payments WHERE user_id = $1 LIMIT 1`
+	query := `SELECT * FROM payments WHERE user_id = $1`
 	err := r.db.Select(&payment, query, userId)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

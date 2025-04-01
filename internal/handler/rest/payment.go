@@ -91,10 +91,9 @@ func (r *Rest) GetPaymentByCheckout(ctx *fiber.Ctx) error {
 }
 
 func (r *Rest) GetPaymentByUser(ctx *fiber.Ctx) error {
-	param := ctx.Params("id")
-	userId, err := uuid.Parse(param)
-	if err != nil {
-		return err
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
 	}
 
 	payments, err := r.service.PaymentService.GetPaymentByUser(userId)

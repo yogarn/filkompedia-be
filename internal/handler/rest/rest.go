@@ -28,6 +28,7 @@ func mountAuth(routerGroup fiber.Router, r *Rest) {
 	auths.Post("/refresh", r.ExchangeToken)
 	auths.Post("/send-otp", r.SendOtp)
 	auths.Post("/verify-otp", r.VerifyOtp)
+	auths.Post("/logout", r.middleware.Authenticate, r.Logout)
 }
 
 func mountUser(routerGroup fiber.Router, r *Rest) {

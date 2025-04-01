@@ -183,3 +183,45 @@ func (r *Rest) ExchangeToken(ctx *fiber.Ctx) (err error) {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) Logout(ctx *fiber.Ctx) (err error) {
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+
+	tokenString := ctx.Cookies("refresh_token")
+	if tokenString == "" {
+		return &response.InvalidToken
+	}
+
+	deleteTokenReq := &model.DeleteToken{}
+	deleteTokenReq.UserId = userId
+	deleteTokenReq.Token = tokenString
+
+	err = r.service.AuthService.DeleteToken(deleteTokenReq)
+	if err != nil {
+		return err
+	}
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Secure:   false,
+		Path:     "/",
+	})
+
+	ctx.Cookie(&fiber.Cookie{
+		Name:     "refresh_token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Secure:   false,
+		Path:     "/",
+	})
+
+	response.Success(ctx, http.StatusOK, "Logged out successfully", nil)
+	return nil
+}

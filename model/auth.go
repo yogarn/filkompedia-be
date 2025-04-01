@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type RegisterReq struct {
@@ -34,4 +36,9 @@ type SessionsRes struct {
 	ExpiresAt time.Time `json:"expires_at"`
 	UserAgent string    `json:"user_agent"`
 	DeviceId  string    `json:"device_id"`
+}
+
+type DeleteToken struct {
+	UserId uuid.UUID `json:"userId"`
+	Token  string    `json:"token"`
 }

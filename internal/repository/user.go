@@ -14,6 +14,7 @@ type IUserRepository interface {
 	GetUsers(users *[]entity.User, page, pageSize int) error
 	GetUser(user *entity.User, userId uuid.UUID) error
 	GetUserByEmail(email string) (user *entity.User, err error)
+	UpdateRole(userId uuid.UUID, roleId int) error
 }
 
 type UserRepository struct {
@@ -60,4 +61,24 @@ func (r *UserRepository) GetUserByEmail(email string) (user *entity.User, err er
 	}
 
 	return user, err
+}
+
+func (r *UserRepository) UpdateRole(userId uuid.UUID, roleId int) error {
+	query := `UPDATE users SET role_id = $1 WHERE id = $2`
+
+	result, err := r.db.Exec(query, roleId, userId)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.UserNotFound
+	}
+
+	return nil
 }

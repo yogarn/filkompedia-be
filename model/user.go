@@ -17,6 +17,11 @@ type Profile struct {
 	RoleId   int       `json:"roleId" db:"role_id"`
 }
 
+type RoleUpdate struct {
+	Id     uuid.UUID `json:"id" db:"id"`
+	RoleId int       `json:"roleId" db:"role_id"`
+}
+
 func UserToProfile(user entity.User) Profile {
 	return Profile{
 		Id:       user.Id,

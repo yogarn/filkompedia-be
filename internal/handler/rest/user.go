@@ -3,6 +3,7 @@ package rest
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/model"
@@ -51,5 +52,24 @@ func (r *Rest) GetAllUserProfile(ctx *fiber.Ctx) (err error) {
 	}
 
 	response.Success(ctx, http.StatusOK, "success", profiles)
+	return nil
+}
+
+func (r *Rest) UpdateRole(ctx *fiber.Ctx) (err error) {
+	roleReq := &model.RoleUpdate{}
+	if err := ctx.BodyParser(roleReq); err != nil {
+		return err
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(roleReq); err != nil {
+		return err
+	}
+
+	if err := r.service.UserService.UpdateRole(roleReq); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }

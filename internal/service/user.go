@@ -11,6 +11,7 @@ type IUserService interface {
 	GetProfiles(profiles *[]model.Profile, profilesReq model.ProfilesReq) error
 	GetProfile(profile *model.Profile, userId uuid.UUID) error
 	GetUserById(user *entity.User, userId uuid.UUID) (err error)
+	UpdateRole(userProfile *model.RoleUpdate) error
 }
 
 type UserService struct {
@@ -55,4 +56,8 @@ func (s *UserService) GetProfile(profile *model.Profile, userId uuid.UUID) error
 	*profile = model.UserToProfile(user)
 
 	return nil
+}
+
+func (s *UserService) UpdateRole(userProfile *model.RoleUpdate) error {
+	return s.UserRepository.UpdateRole(userProfile.Id, userProfile.RoleId)
 }

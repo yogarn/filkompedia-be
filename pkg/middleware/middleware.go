@@ -13,6 +13,7 @@ type IMiddleware interface {
 	Authorize(roles []int) fiber.Handler
 	PromMiddleware(ctx *fiber.Ctx) error
 	LogrusMiddleware(ctx *fiber.Ctx) error
+	BookCommentCheck(ctx *fiber.Ctx) error
 }
 
 type middleware struct {

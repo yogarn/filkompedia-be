@@ -52,7 +52,7 @@ func mountComment(routerGroup fiber.Router, r *Rest) {
 
 	comments.Get("/:id", r.GetComment)
 	comments.Get("/book/:bookId", r.GetCommentByBook)
-	comments.Post("/", r.CreateComment)
+	comments.Post("/", r.middleware.BookCommentCheck, r.CreateComment)
 	comments.Put("/book/:bookId/comment/:id", r.UpdateComment)
 	comments.Delete("/:id", r.DeleteComment)
 }
@@ -83,11 +83,11 @@ func mountPayment(routerGroup fiber.Router, r *Rest) {
 	payments := routerGroup.Group("/payments")
 
 	payments.Post("/webhook", r.HandleMidtransWebhook)
+	payments.Get("/user", r.middleware.Authenticate, r.GetPaymentByUser)
 	payments.Get("/:id", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetPayment)
 	payments.Get("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.GetPayments)
 	payments.Get("/book/:id", r.middleware.Authenticate, r.CheckUserBookPurchase)
 	payments.Get("/checkout/:id", r.middleware.Authenticate, r.GetPaymentByCheckout)
-	payments.Get("/user/:id", r.middleware.Authenticate, r.GetPaymentByUser)
 }
 
 func (r *Rest) RegisterRoutes() {

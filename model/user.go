@@ -22,6 +22,12 @@ type RoleUpdate struct {
 	RoleId int       `json:"roleId" db:"role_id"`
 }
 
+type EditProfile struct {
+	Id       uuid.UUID `json:"id" validate:"required,uuid"`
+	Username string    `json:"username"`
+	Email    string    `json:"email" validate:"email"`
+}
+
 func UserToProfile(user entity.User) Profile {
 	return Profile{
 		Id:       user.Id,

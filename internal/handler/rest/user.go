@@ -73,3 +73,23 @@ func (r *Rest) UpdateRole(ctx *fiber.Ctx) (err error) {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) EditProfile(ctx *fiber.Ctx) error {
+	var edit model.EditProfile
+	if err := ctx.BodyParser(&edit); err != nil {
+		return err
+	}
+
+	userId, ok := ctx.Locals("userId").(uuid.UUID)
+	if !ok {
+		return &response.Unauthorized
+	}
+	edit.Id = userId
+
+	if err := r.service.UserService.EditProfile(&edit); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}

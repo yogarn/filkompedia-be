@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
@@ -15,6 +16,7 @@ type IUserRepository interface {
 	GetUser(user *entity.User, userId uuid.UUID) error
 	GetUserByEmail(email string) (user *entity.User, err error)
 	UpdateRole(userId uuid.UUID, roleId int) error
+	EditUser(edit *model.EditProfile) error
 }
 
 type UserRepository struct {
@@ -81,4 +83,16 @@ func (r *UserRepository) UpdateRole(userId uuid.UUID, roleId int) error {
 	}
 
 	return nil
+}
+
+func (r *UserRepository) EditUser(edit *model.EditProfile) error {
+	query := `
+		UPDATE users 
+		SET username = :username,
+		    email = :email
+		WHERE id = :id
+	`
+
+	_, err := r.db.NamedExec(query, edit)
+	return err
 }

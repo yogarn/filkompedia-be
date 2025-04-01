@@ -12,6 +12,7 @@ type IUserService interface {
 	GetProfile(profile *model.Profile, userId uuid.UUID) error
 	GetUserById(user *entity.User, userId uuid.UUID) (err error)
 	UpdateRole(userProfile *model.RoleUpdate) error
+	EditProfile(edit *model.EditProfile) error
 }
 
 type UserService struct {
@@ -60,4 +61,25 @@ func (s *UserService) GetProfile(profile *model.Profile, userId uuid.UUID) error
 
 func (s *UserService) UpdateRole(userProfile *model.RoleUpdate) error {
 	return s.UserRepository.UpdateRole(userProfile.Id, userProfile.RoleId)
+}
+
+func (s *UserService) EditProfile(edit *model.EditProfile) error {
+	var user entity.User
+	if err := s.UserRepository.GetUser(&user, edit.Id); err != nil {
+		return err
+	}
+
+	//todo improve this
+	if edit.Username == "" {
+		edit.Username = user.Username
+	}
+	if edit.Email == "" {
+		edit.Email = user.Email
+	}
+
+	if err := s.UserRepository.EditUser(edit); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -17,16 +17,20 @@ type IUserService interface {
 }
 
 type UserService struct {
-	UserRepository    repository.IUserRepository
-	CartRepository    repository.ICartRepository
-	PaymentRepository repository.IPaymentRepository
+	UserRepository     repository.IUserRepository
+	CartRepository     repository.ICartRepository
+	PaymentRepository  repository.IPaymentRepository
+	AuthRepository     repository.IAuthRepository
+	CheckoutRepository repository.ICheckoutRepository
 }
 
-func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository) IUserService {
+func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository, authRepository repository.IAuthRepository, checkoutRepository repository.ICheckoutRepository) IUserService {
 	return &UserService{
-		UserRepository:    userRepository,
-		CartRepository:    cartRepository,
-		PaymentRepository: paymentRepository,
+		UserRepository:     userRepository,
+		CartRepository:     cartRepository,
+		PaymentRepository:  paymentRepository,
+		AuthRepository:     authRepository,
+		CheckoutRepository: checkoutRepository,
 	}
 }
 
@@ -103,7 +107,11 @@ func (s *UserService) DeleteUser(userId uuid.UUID) error {
 		return err
 	}
 
-	//delete user session
+	//todo implement transaction
+
+	if err := s.AuthRepository.ClearToken(userId); err != nil {
+		return err
+	}
 
 	if err := s.PaymentRepository.DeleteUser(userId); err != nil {
 		return err
@@ -114,6 +122,10 @@ func (s *UserService) DeleteUser(userId uuid.UUID) error {
 	}
 
 	if err := s.CartRepository.DeleteUser(userId); err != nil {
+		return err
+	}
+
+	if err := s.CheckoutRepository.DeleteUser(userId); err != nil {
 		return err
 	}
 

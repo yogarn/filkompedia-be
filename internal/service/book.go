@@ -17,14 +17,16 @@ type IBookService interface {
 }
 
 type BookService struct {
-	bookRepo repository.IBookRepository
-	cartRepo repository.ICartRepository
+	bookRepo    repository.IBookRepository
+	cartRepo    repository.ICartRepository
+	commentRepo repository.ICommentRepository
 }
 
-func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository) IBookService {
+func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository, commentRepo repository.ICommentRepository) IBookService {
 	return &BookService{
-		bookRepo: bookRepo,
-		cartRepo: cartRepo,
+		bookRepo:    bookRepo,
+		cartRepo:    cartRepo,
+		commentRepo: commentRepo,
 	}
 }
 
@@ -90,6 +92,10 @@ func (s *BookService) CreateBook(create *model.CreateBook) error {
 func (s *BookService) DeleteBook(bookId uuid.UUID) error {
 	var book entity.Book
 	if err := s.bookRepo.GetBook(&book, bookId); err != nil {
+		return err
+	}
+
+	if err := s.commentRepo.DeleteCommentByBook(bookId); err != nil {
 		return err
 	}
 

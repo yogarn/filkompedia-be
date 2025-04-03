@@ -120,6 +120,10 @@ func (s *AuthService) Login(loginReq *model.LoginReq, ipAddress string, userAgen
 		return nil, &response.UserUnverified
 	}
 
+	if user.Id == uuid.Nil {
+		return nil, &response.InvalidCredentials
+	}
+
 	err = s.Bcrypt.CompareAndHashPassword(user.Password, loginReq.Password)
 	if err != nil {
 		return nil, &response.InvalidCredentials

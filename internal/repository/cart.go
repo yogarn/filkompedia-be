@@ -17,6 +17,8 @@ type ICartRepository interface {
 	RemoveFromCart(cartId uuid.UUID) error
 	EditCart(cart *entity.Cart, amount int) error
 	DeleteCartByBook(bookId uuid.UUID) error
+	DeleteUserCart(userId uuid.UUID) error
+	DeleteUser(userId uuid.UUID) error
 }
 
 type CartRepository struct {
@@ -131,4 +133,16 @@ func (r *CartRepository) DeleteCartByBook(bookId uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (r *CartRepository) DeleteUserCart(userId uuid.UUID) error {
+	query := `DELETE FROM carts WHERE user_id = $1 AND checkout_id IS NULL`
+	_, err := r.db.Exec(query, userId)
+	return err
+}
+
+func (r *CartRepository) DeleteUser(userId uuid.UUID) error {
+	query := `UPDATE carts SET user_id = $1 WHERE user_id = $2 AND checkout_id IS NOT NULL`
+	_, err := r.db.Exec(query, uuid.Nil, userId)
+	return err
 }

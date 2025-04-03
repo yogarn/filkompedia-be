@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"github.com/yogarn/filkompedia-be/entity"
+	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
@@ -15,6 +16,8 @@ type IUserRepository interface {
 	GetUser(user *entity.User, userId uuid.UUID) error
 	GetUserByEmail(email string) (user *entity.User, err error)
 	UpdateRole(userId uuid.UUID, roleId int) error
+	EditUser(edit *model.EditProfile) error
+	DeleteUser(userId uuid.UUID) error
 }
 
 type UserRepository struct {
@@ -67,6 +70,38 @@ func (r *UserRepository) UpdateRole(userId uuid.UUID, roleId int) error {
 	query := `UPDATE users SET role_id = $1 WHERE id = $2`
 
 	result, err := r.db.Exec(query, roleId, userId)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.UserNotFound
+	}
+
+	return nil
+}
+
+func (r *UserRepository) EditUser(edit *model.EditProfile) error {
+	query := `
+		UPDATE users 
+		SET username = :username,
+			is_verified = :is_verified
+		WHERE id = :id
+	`
+
+	_, err := r.db.NamedExec(query, edit)
+	return err
+}
+
+func (r *UserRepository) DeleteUser(userId uuid.UUID) error {
+	query := `DELETE FROM users WHERE id = $1`
+	result, err := r.db.Exec(query, userId)
+
 	if err != nil {
 		return err
 	}

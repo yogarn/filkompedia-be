@@ -16,6 +16,7 @@ type ICheckoutRepository interface {
 	AddCheckoutId(cartID uuid.UUID, checkoutId uuid.UUID) error
 	NewCheckout(userId, checkoutId uuid.UUID) error
 	GetCheckout(checkoutId uuid.UUID) (*entity.Checkout, error)
+	DeleteUser(userId uuid.UUID) error
 }
 
 type CheckoutRepository struct {
@@ -73,4 +74,10 @@ func (r *CheckoutRepository) GetCheckout(checkoutId uuid.UUID) (*entity.Checkout
 		return nil, err
 	}
 	return &checkout, err
+}
+
+func (r *CheckoutRepository) DeleteUser(userId uuid.UUID) error {
+	query := `UPDATE checkouts SET user_id = $1 WHERE user_id = $2`
+	_, err := r.db.Exec(query, uuid.Nil, userId)
+	return err
 }

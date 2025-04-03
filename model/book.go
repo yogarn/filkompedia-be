@@ -1,6 +1,9 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/yogarn/filkompedia-be/entity"
+)
 
 type BookReq struct {
 	Page     int `json:"page" validate:"required,min=1"`
@@ -44,4 +47,17 @@ type EditBook struct {
 	Author       string    `json:"author" db:"author" validate:"omitempty,min=5"`
 	ReleaseDate  string    `json:"release_date" db:"release_date" validate:"omitempty"` //todo make a validator for date
 	Price        float64   `json:"price" db:"price" validate:"omitempty,min=1"`
+}
+
+func BookToBookResponse(book entity.Book) BookResponse {
+	return BookResponse{
+		Id:           book.Id,
+		Title:        book.Title,
+		Image:        book.Image,
+		Description:  book.Description,
+		Introduction: book.Introduction,
+		Author:       book.Author,
+		ReleaseDate:  book.ReleaseDate,
+		Price:        book.Price,
+	}
 }

@@ -17,14 +17,16 @@ type IBookService interface {
 }
 
 type BookService struct {
-	bookRepo repository.IBookRepository
-	cartRepo repository.ICartRepository
+	bookRepo    repository.IBookRepository
+	cartRepo    repository.ICartRepository
+	commentRepo repository.ICommentRepository
 }
 
-func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository) IBookService {
+func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository, commentRepo repository.ICommentRepository) IBookService {
 	return &BookService{
-		bookRepo: bookRepo,
-		cartRepo: cartRepo,
+		bookRepo:    bookRepo,
+		cartRepo:    cartRepo,
+		commentRepo: commentRepo,
 	}
 }
 
@@ -35,18 +37,9 @@ func (s *BookService) GetBook(bookId uuid.UUID) (*model.BookResponse, error) {
 		return nil, err
 	}
 
-	bookResponse := &model.BookResponse{
-		Id:           book.Id,
-		Title:        book.Title,
-		Description:  book.Description,
-		Introduction: book.Introduction,
-		Image:        book.Image,
-		Author:       book.Author,
-		ReleaseDate:  book.ReleaseDate,
-		Price:        book.Price,
-	}
+	bookResponse := model.BookToBookResponse(book)
 
-	return bookResponse, nil
+	return &bookResponse, nil
 }
 
 func (s *BookService) SearchBooks(bookSearch model.BookSearch) (*[]model.BookResponse, error) {
@@ -58,16 +51,7 @@ func (s *BookService) SearchBooks(bookSearch model.BookSearch) (*[]model.BookRes
 
 	booksResponse := make([]model.BookResponse, len(booksEntity))
 	for i, book := range booksEntity {
-		booksResponse[i] = model.BookResponse{
-			Id:           book.Id,
-			Title:        book.Title,
-			Image:        book.Image,
-			Description:  book.Description,
-			Introduction: book.Introduction,
-			Author:       book.Author,
-			ReleaseDate:  book.ReleaseDate,
-			Price:        book.Price,
-		}
+		booksResponse[i] = model.BookToBookResponse(book)
 	}
 
 	return &booksResponse, nil
@@ -90,6 +74,10 @@ func (s *BookService) CreateBook(create *model.CreateBook) error {
 func (s *BookService) DeleteBook(bookId uuid.UUID) error {
 	var book entity.Book
 	if err := s.bookRepo.GetBook(&book, bookId); err != nil {
+		return err
+	}
+
+	if err := s.commentRepo.DeleteCommentByBook(bookId); err != nil {
 		return err
 	}
 

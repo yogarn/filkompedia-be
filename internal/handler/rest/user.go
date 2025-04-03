@@ -70,6 +70,10 @@ func (r *Rest) UpdateRole(ctx *fiber.Ctx) (err error) {
 		return err
 	}
 
+	if err := r.service.AuthService.ClearToken(roleReq.Id); err != nil {
+		return err
+	}
+
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }

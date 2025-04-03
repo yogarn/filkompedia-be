@@ -26,6 +26,9 @@ type IAuthService interface {
 	Login(loginReq *model.LoginReq, ipAddress string, userAgent string, expiry int) (loginRes *model.LoginRes, err error)
 	GetSessions(userId uuid.UUID) (*[]model.SessionsRes, error)
 	ExchangeToken(token string, expiry int) (jwtToken string, newToken string, err error)
+
+	ClearToken(userId uuid.UUID) error
+	DeleteToken(info *model.DeleteToken) error
 }
 
 type AuthService struct {
@@ -226,4 +229,12 @@ func generateOTP() string {
 		log.Fatal(err)
 	}
 	return fmt.Sprintf("%06d", n.Int64())
+}
+
+func (s *AuthService) ClearToken(userId uuid.UUID) error {
+	return s.AuthRepository.ClearToken(userId)
+}
+
+func (s *AuthService) DeleteToken(info *model.DeleteToken) error {
+	return s.AuthRepository.DeleteToken(info.UserId, info.Token)
 }

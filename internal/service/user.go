@@ -65,7 +65,12 @@ func (s *UserService) GetProfile(profile *model.Profile, userId uuid.UUID) error
 }
 
 func (s *UserService) UpdateRole(userProfile *model.RoleUpdate) error {
-	return s.UserRepository.UpdateRole(userProfile.Id, userProfile.RoleId)
+	err := s.UserRepository.UpdateRole(userProfile.Id, userProfile.RoleId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *UserService) EditProfile(edit *model.EditProfile) error {

@@ -18,6 +18,7 @@ type IPaymentRepository interface {
 	GetPayments(page, pageSize int) ([]entity.Payment, error)
 	GetPaymentByCheckout(checkoutId uuid.UUID) (*entity.Payment, error)
 	GetPaymentByUser(userId uuid.UUID) (*[]entity.Payment, error)
+	DeleteUser(userId uuid.UUID) error
 }
 
 type PaymentRepository struct {
@@ -119,4 +120,10 @@ func (r *PaymentRepository) GetPaymentByUser(userId uuid.UUID) (*[]entity.Paymen
 		return nil, err
 	}
 	return &payment, err
+}
+
+func (r *PaymentRepository) DeleteUser(userId uuid.UUID) error {
+	query := `UPDATE payments SET user_id = $1 WHERE user_id = $2`
+	_, err := r.db.Exec(query, uuid.Nil, userId)
+	return err
 }

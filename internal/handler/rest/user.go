@@ -93,3 +93,18 @@ func (r *Rest) EditProfile(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) DeleteUser(ctx *fiber.Ctx) error {
+	param := ctx.Params("userId")
+	userId, err := uuid.Parse(param)
+	if err != nil {
+		return err
+	}
+
+	if err := r.service.UserService.DeleteUser(userId); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}

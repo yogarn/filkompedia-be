@@ -17,6 +17,7 @@ type IUserRepository interface {
 	GetUserByEmail(email string) (user *entity.User, err error)
 	UpdateRole(userId uuid.UUID, roleId int) error
 	EditUser(edit *model.EditProfile) error
+	DeleteUser(userId uuid.UUID) error
 }
 
 type UserRepository struct {
@@ -96,4 +97,24 @@ func (r *UserRepository) EditUser(edit *model.EditProfile) error {
 
 	_, err := r.db.NamedExec(query, edit)
 	return err
+}
+
+func (r *UserRepository) DeleteUser(userId uuid.UUID) error {
+	query := `DELETE FROM users WHERE id = $1`
+	result, err := r.db.Exec(query, userId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.UserNotFound
+	}
+
+	return nil
 }

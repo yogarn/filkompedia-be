@@ -20,7 +20,7 @@ type Service struct {
 
 func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient, midtrans midtrans.IMidtrans) *Service {
 	return &Service{
-		UserService:     NewUserService(repository.UserRepository),
+		UserService:     NewUserService(repository.UserRepository, repository.CartRepository, repository.PaymentRepository),
 		AuthService:     NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt, smtp),
 		BookService:     NewBookService(repository.BookRepository, repository.CartRepository),
 		CartService:     NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),

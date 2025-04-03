@@ -13,15 +13,20 @@ type IUserService interface {
 	GetUserById(user *entity.User, userId uuid.UUID) (err error)
 	UpdateRole(userProfile *model.RoleUpdate) error
 	EditProfile(edit *model.EditProfile) error
+	DeleteUser(userId uuid.UUID) error
 }
 
 type UserService struct {
-	UserRepository repository.IUserRepository
+	UserRepository    repository.IUserRepository
+	CartRepository    repository.ICartRepository
+	PaymentRepository repository.IPaymentRepository
 }
 
-func NewUserService(userRepository repository.IUserRepository) IUserService {
+func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository) IUserService {
 	return &UserService{
-		UserRepository: userRepository,
+		UserRepository:    userRepository,
+		CartRepository:    cartRepository,
+		PaymentRepository: paymentRepository,
 	}
 }
 
@@ -81,6 +86,33 @@ func (s *UserService) EditProfile(edit *model.EditProfile) error {
 	}
 
 	if err := s.UserRepository.EditUser(edit); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserService) DeleteUser(userId uuid.UUID) error {
+	var user entity.User
+	if err := s.UserRepository.GetUser(&user, userId); err != nil {
+		return err
+	}
+
+	//delete user session
+
+	if err := s.PaymentRepository.DeleteUser(userId); err != nil {
+		return err
+	}
+
+	if err := s.CartRepository.DeleteUserCart(userId); err != nil {
+		return err
+	}
+
+	if err := s.CartRepository.DeleteUser(userId); err != nil {
+		return err
+	}
+
+	if err := s.UserRepository.DeleteUser(userId); err != nil {
 		return err
 	}
 

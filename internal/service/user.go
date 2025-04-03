@@ -87,12 +87,6 @@ func (s *UserService) EditProfile(edit *model.EditProfile) error {
 	if edit.Username == "" {
 		edit.Username = user.Username
 	}
-	if edit.Email == "" {
-		edit.Email = user.Email
-		edit.IsVerified = true
-	} else {
-		//todo invalidate session and logs user out
-	}
 
 	if err := s.UserRepository.EditUser(edit); err != nil {
 		return err

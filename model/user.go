@@ -25,7 +25,6 @@ type RoleUpdate struct {
 type EditProfile struct {
 	Id         uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
 	Username   string    `json:"username" db:"username"`
-	Email      string    `json:"email" db:"email" validate:"email"`
 	IsVerified bool      `db:"is_verified"`
 }
 

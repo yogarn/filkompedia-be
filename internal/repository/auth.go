@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/pkg/response"
 )
@@ -44,6 +45,15 @@ func NewAuthRepository(db *sqlx.DB, rdb *redis.Client) IAuthRepository {
 func (r *AuthRepository) Register(user *entity.User) (err error) {
 	query := `INSERT INTO users (id, username, email, password, role_id) VALUES ($1, $2, $3, $4, $5)`
 	_, err = r.db.Exec(query, user.Id, user.Username, user.Email, user.Password, user.RoleId)
+
+	if err != nil {
+		var pgErr *pq.Error
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return &response.DuplicateAccount
+		}
+		return err
+	}
+
 	return err
 }
 

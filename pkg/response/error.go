@@ -31,7 +31,8 @@ var (
 	CheckoutNotFound = NewErrorResponse(http.StatusNotFound, "Checkout not found")
 	PaymentNotFound  = NewErrorResponse(http.StatusNotFound, "Payment not found")
 
-	UserUnverified = NewErrorResponse(http.StatusForbidden, "User is not verified")
+	UserUnverified   = NewErrorResponse(http.StatusForbidden, "User is not verified")
+	DuplicateAccount = NewErrorResponse(http.StatusConflict, "User already exists")
 
 	BadRequest = NewErrorResponse(http.StatusBadRequest, "Bad request")
 

@@ -90,7 +90,6 @@ func (r *UserRepository) EditUser(edit *model.EditProfile) error {
 	query := `
 		UPDATE users 
 		SET username = :username,
-			is_verified = :is_verified
 		WHERE id = :id
 	`
 

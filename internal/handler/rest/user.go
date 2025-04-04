@@ -84,6 +84,10 @@ func (r *Rest) EditProfile(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if edit.Id != uuid.Nil {
+		return &response.BadRequest
+	}
+
 	userId, ok := ctx.Locals("userId").(uuid.UUID)
 	if !ok {
 		return &response.Unauthorized

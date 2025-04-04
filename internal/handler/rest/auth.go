@@ -225,3 +225,17 @@ func (r *Rest) Logout(ctx *fiber.Ctx) (err error) {
 	response.Success(ctx, http.StatusOK, "Logged out successfully", nil)
 	return nil
 }
+
+func (r *Rest) ChangePassword(ctx *fiber.Ctx) error {
+	var req model.ChangePassword
+	if err := ctx.BodyParser(&req); err != nil {
+		return err
+	}
+
+	if err := r.service.AuthService.ChangePassword(&req); err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", nil)
+	return nil
+}

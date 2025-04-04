@@ -42,3 +42,9 @@ type DeleteToken struct {
 	UserId uuid.UUID `json:"userId"`
 	Token  string    `json:"token"`
 }
+
+type ChangePassword struct {
+	Email       string `json:"email" db:"email" validate:"required,email"`
+	Otp         string `json:"otp" validate:"required"`
+	NewPassword string `json:"password" db:"password" validate:"required,gte=8"`
+}

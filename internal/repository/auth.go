@@ -28,6 +28,8 @@ type IAuthRepository interface {
 
 	ClearToken(userId uuid.UUID) error
 	DeleteToken(userId uuid.UUID, token string) error
+
+	ChangePassword(email, password string) error
 }
 
 type AuthRepository struct {
@@ -176,4 +178,28 @@ func (r *AuthRepository) DeleteToken(userId uuid.UUID, token string) error {
 	`
 	_, err := r.db.Exec(query, userId, token)
 	return err
+}
+
+func (r *AuthRepository) ChangePassword(email, password string) error {
+	query := `
+		UPDATE users 
+		SET password = $1
+		WHERE email = $2
+	`
+
+	result, err := r.db.Exec(query, password, email)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return &response.UserNotFound
+	}
+
+	return nil
 }

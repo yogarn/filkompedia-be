@@ -89,7 +89,7 @@ func (r *UserRepository) UpdateRole(userId uuid.UUID, roleId int) error {
 func (r *UserRepository) EditUser(edit *model.EditProfile) error {
 	query := `
 		UPDATE users 
-		SET username = :username,
+		SET username = :username
 		WHERE id = :id
 	`
 

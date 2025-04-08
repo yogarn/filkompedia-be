@@ -245,15 +245,6 @@ func (s *AuthService) DeleteToken(info *model.DeleteToken) error {
 }
 
 func (s *AuthService) ChangePassword(req *model.ChangePassword) error {
-	if !s.AuthRepository.VerifyOTP(req.Email, req.Otp) {
-		return &response.InvalidOTP
-	}
-
-	err := s.AuthRepository.DeleteOTP(req.Email)
-	if err != nil {
-		return err
-	}
-
 	hashedpassword, err := s.Bcrypt.GenerateFromPassword(req.NewPassword)
 	if err != nil {
 		return err

@@ -29,6 +29,7 @@ type IAuthService interface {
 
 	ClearToken(userId uuid.UUID) error
 	DeleteToken(info *model.DeleteToken) error
+	ChangePassword(req *model.ChangePassword) error
 }
 
 type AuthService struct {
@@ -241,4 +242,17 @@ func (s *AuthService) ClearToken(userId uuid.UUID) error {
 
 func (s *AuthService) DeleteToken(info *model.DeleteToken) error {
 	return s.AuthRepository.DeleteToken(info.UserId, info.Token)
+}
+
+func (s *AuthService) ChangePassword(req *model.ChangePassword) error {
+	hashedpassword, err := s.Bcrypt.GenerateFromPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	if err := s.AuthRepository.ChangePassword(req.Email, hashedpassword); err != nil {
+		return err
+	}
+
+	return nil
 }

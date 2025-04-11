@@ -31,6 +31,10 @@ func (r *Rest) SearchBooks(ctx *fiber.Ctx) error {
 	bookSearch.PageSize = ctx.QueryInt("size", 9)
 	bookSearch.SearchParam = ctx.Query("search", "%")
 
+	if err := r.validator.Struct(bookSearch); err != nil {
+		return err
+	}
+
 	books, err := r.service.BookService.SearchBooks(bookSearch)
 	if err != nil {
 		return err
@@ -76,6 +80,10 @@ func (r *Rest) DeleteBook(ctx *fiber.Ctx) error {
 func (r *Rest) EditBook(ctx *fiber.Ctx) error {
 	var edit model.EditBook
 	if err := ctx.BodyParser(&edit); err != nil {
+		return err
+	}
+
+	if err := r.validator.Struct(edit); err != nil {
 		return err
 	}
 

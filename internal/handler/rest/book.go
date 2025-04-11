@@ -46,6 +46,10 @@ func (r *Rest) CreateBook(ctx *fiber.Ctx) error {
 		return err
 	}
 
+	if err := r.validator.Struct(create); err != nil {
+		return err
+	}
+
 	if err := r.service.BookService.CreateBook(&create); err != nil {
 		return err
 	}

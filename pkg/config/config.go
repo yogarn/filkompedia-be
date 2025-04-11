@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
 	"github.com/gofiber/fiber/v2"
 	"github.com/jmoiron/sqlx"
@@ -19,6 +20,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	monitoring "github.com/yogarn/filkompedia-be/pkg/prometheus"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
+	val "github.com/yogarn/filkompedia-be/pkg/validator"
 )
 
 type Config struct {
@@ -41,6 +43,9 @@ func StartUp(config *Config) {
 	promMetrics := monitoring.Start()
 	logrus := logger.SetupLogger()
 
+	validator := validator.New()
+	val.RegisterValidator(validator)
+
 	repository := repository.NewRepository(config.DB, config.Redis)
 	service := service.NewService(repository, bcrypt, jwt, smtp, midtrans)
 
@@ -49,7 +54,7 @@ func StartUp(config *Config) {
 	config.App.Use(middleware.PromMiddleware)
 	config.App.Use(middleware.LogrusMiddleware)
 
-	rest := rest.NewRest(config.App, service, middleware)
+	rest := rest.NewRest(config.App, service, middleware, validator)
 	rest.RegisterRoutes()
 
 	rest.Start(fmt.Sprintf(":%s", os.Getenv("PORT")))

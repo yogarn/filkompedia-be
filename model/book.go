@@ -17,14 +17,14 @@ type BookSearch struct {
 }
 
 type CreateBook struct {
-	Title        string  `json:"title" validate:"required"`
-	Description  string  `json:"description" validate:"required"`
-	Introduction string  `json:"introduction" validate:"required"`
-	Image        string  `json:"image"`
+	Title        string  `json:"title" validate:"required,gte=5"`
+	Description  string  `json:"description" validate:"required,gte=10"`
+	Introduction string  `json:"introduction" validate:"required,gte=10"`
+	Image        string  `json:"image" validate:"required,url"`
 	File         string  `jsob:"file"`
-	Author       string  `json:"author" validate:"required"`
-	ReleaseDate  string  `json:"release_date" validate:"required"`
-	Price        float64 `json:"price"`
+	Author       string  `json:"author" validate:"required,gte=5"`
+	ReleaseDate  string  `json:"release_date" validate:"required,rfc3339date"`
+	Price        float64 `json:"price" validate:"required,min=1000"`
 }
 
 type BookResponse struct {

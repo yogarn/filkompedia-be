@@ -22,15 +22,17 @@ type UserService struct {
 	PaymentRepository  repository.IPaymentRepository
 	AuthRepository     repository.IAuthRepository
 	CheckoutRepository repository.ICheckoutRepository
+	CommentRepository  repository.ICommentRepository
 }
 
-func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository, authRepository repository.IAuthRepository, checkoutRepository repository.ICheckoutRepository) IUserService {
+func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository, authRepository repository.IAuthRepository, checkoutRepository repository.ICheckoutRepository, CommentRepository repository.ICommentRepository) IUserService {
 	return &UserService{
 		UserRepository:     userRepository,
 		CartRepository:     cartRepository,
 		PaymentRepository:  paymentRepository,
 		AuthRepository:     authRepository,
 		CheckoutRepository: checkoutRepository,
+		CommentRepository:  CommentRepository,
 	}
 }
 
@@ -120,6 +122,10 @@ func (s *UserService) DeleteUser(userId uuid.UUID) error {
 	}
 
 	if err := s.CheckoutRepository.DeleteUser(userId); err != nil {
+		return err
+	}
+
+	if err := s.CommentRepository.DeleteUser(userId); err != nil {
 		return err
 	}
 

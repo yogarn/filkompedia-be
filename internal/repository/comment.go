@@ -17,6 +17,7 @@ type ICommentRepository interface {
 	UpdateComment(comment *entity.Comment) error
 	DeleteComment(id uuid.UUID, userId uuid.UUID) error
 	DeleteCommentByBook(bookId uuid.UUID) error
+	DeleteUser(userId uuid.UUID) error
 }
 
 type CommentRepository struct {
@@ -85,5 +86,11 @@ func (r *CommentRepository) DeleteComment(id uuid.UUID, userId uuid.UUID) error 
 func (r *CommentRepository) DeleteCommentByBook(bookId uuid.UUID) error {
 	query := `DELETE FROM comments WHERE book_id = $1`
 	_, err := r.db.Exec(query, bookId)
+	return err
+}
+
+func (r *CommentRepository) DeleteUser(userId uuid.UUID) error {
+	query := `UPDATE comments SET user_id = $1 WHERE user_id = $2`
+	_, err := r.db.Exec(query, uuid.Nil, userId)
 	return err
 }

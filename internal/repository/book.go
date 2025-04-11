@@ -38,7 +38,7 @@ func (r *BookRepository) GetBooks(books *[]entity.Book, page, pageSize int) erro
 	}
 
 	offset := (page - 1) * pageSize
-	query := `SELECT * FROM books ORDER BY release_date DESC LIMIT $1 OFFSET $2`
+	query := `SELECT * FROM books WHERE author != 'This book is deleted' ORDER BY release_date DESC LIMIT $1 OFFSET $2`
 	err := r.db.Select(books, query, pageSize, offset)
 	if errors.Is(err, sql.ErrNoRows) {
 		return &response.BookNotFound
@@ -59,9 +59,10 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 	query := `
 		SELECT * FROM books 
 		WHERE 
-			title ILIKE $1 OR 
+			(title ILIKE $1 OR 
 			author ILIKE $1 OR 
-			description ILIKE $1 
+			description ILIKE $1) AND 
+			author != 'This book is deleted' 
 		ORDER BY release_date DESC 
 		LIMIT $2 OFFSET $3`
 	searchPattern := "%" + searchQuery + "%"
@@ -73,7 +74,7 @@ func (r *BookRepository) SearchBooks(books *[]entity.Book, page, pageSize int, s
 }
 
 func (r *BookRepository) GetBook(book *entity.Book, bookId uuid.UUID) error {
-	query := `SELECT * FROM books WHERE id = $1 LIMIT 1`
+	query := `SELECT * FROM books WHERE id = $1 AND author != 'This book is deleted' LIMIT 1`
 	err := r.db.Get(book, query, bookId)
 	if errors.Is(err, sql.ErrNoRows) {
 		return &response.BookNotFound
@@ -88,9 +89,17 @@ func (r *BookRepository) CreateBook(book *entity.Book) error {
 }
 
 func (r *BookRepository) DeleteBook(bookId uuid.UUID) error {
-	query := `DELETE FROM books WHERE id = $1`
-	result, err := r.db.Exec(query, bookId)
+	query := `
+		UPDATE books 
+		SET title = 'Deleted Book',
+		    description = 'This book is deleted',
+		    introduction = 'This book is deleted',
+		    image = 'This book is deleted',
+		    author = 'This book is deleted' 
+		WHERE id = $1
+	`
 
+	result, err := r.db.Exec(query, bookId)
 	if err != nil {
 		return err
 	}
@@ -117,7 +126,7 @@ func (r *BookRepository) EditBook(edit *model.EditBook) error {
 		    author = :author,
 		    release_date = :release_date,
 		    price = :price
-		WHERE id = :id
+		WHERE id = :id AND author != 'This book is deleted'
 	`
 
 	_, err := r.db.NamedExec(query, edit)

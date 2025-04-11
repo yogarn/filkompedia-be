@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/yogarn/filkompedia-be/internal/service"
 	"github.com/yogarn/filkompedia-be/pkg/middleware"
@@ -10,13 +11,15 @@ type Rest struct {
 	router     *fiber.App
 	service    *service.Service
 	middleware middleware.IMiddleware
+	validator  *validator.Validate
 }
 
-func NewRest(router *fiber.App, service *service.Service, middleware middleware.IMiddleware) *Rest {
+func NewRest(router *fiber.App, service *service.Service, middleware middleware.IMiddleware, validator *validator.Validate) *Rest {
 	return &Rest{
 		router:     router,
 		service:    service,
 		middleware: middleware,
+		validator:  validator,
 	}
 }
 

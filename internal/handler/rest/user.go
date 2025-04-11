@@ -94,6 +94,10 @@ func (r *Rest) EditProfile(ctx *fiber.Ctx) error {
 	}
 	edit.Id = userId
 
+	if err := r.validator.Struct(edit); err != nil {
+		return err
+	}
+
 	if err := r.service.UserService.EditProfile(&edit); err != nil {
 		return err
 	}

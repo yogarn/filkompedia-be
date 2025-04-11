@@ -6,8 +6,8 @@ import (
 )
 
 type ProfilesReq struct {
-	Page     int `json:"page" validate:"required"`
-	PageSize int `json:"page_size" validate:"required"`
+	Page     int `json:"page" validate:"required,min=1"`
+	PageSize int `json:"page_size" validate:"required,min=1"`
 }
 
 type Profile struct {
@@ -18,13 +18,13 @@ type Profile struct {
 }
 
 type RoleUpdate struct {
-	Id     uuid.UUID `json:"id" db:"id"`
-	RoleId int       `json:"roleId" db:"role_id"`
+	Id     uuid.UUID `json:"id" db:"id" validate:"required"`
+	RoleId int       `json:"roleId" db:"role_id" validate:"required,min=0,max=1"`
 }
 
 type EditProfile struct {
 	Id         uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
-	Username   string    `json:"username" db:"username"`
+	Username   string    `json:"username" db:"username" validate:"required,lte=32"`
 	IsVerified bool      `db:"is_verified"`
 }
 

@@ -68,6 +68,10 @@ func (r *Rest) AddToCart(ctx *fiber.Ctx) error {
 		return &response.Unauthorized
 	}
 
+	if err := r.validator.Struct(add); err != nil {
+		return err
+	}
+
 	if err := r.service.CartService.AddToCart(add, userId); err != nil {
 		return err
 	}
@@ -85,6 +89,10 @@ func (r *Rest) EditCart(ctx *fiber.Ctx) error {
 	userId, ok := ctx.Locals("userId").(uuid.UUID)
 	if !ok {
 		return &response.Unauthorized
+	}
+
+	if err := r.validator.Struct(edit); err != nil {
+		return err
 	}
 
 	if err := r.service.CartService.EditCart(edit, userId); err != nil {

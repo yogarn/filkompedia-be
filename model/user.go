@@ -11,10 +11,11 @@ type ProfilesReq struct {
 }
 
 type Profile struct {
-	Id       uuid.UUID `json:"id" db:"id"`
-	Username string    `json:"username" db:"username"`
-	Email    string    `json:"email" db:"email"`
-	RoleId   int       `json:"roleId" db:"role_id"`
+	Id             uuid.UUID `json:"id" db:"id"`
+	Username       string    `json:"username" db:"username"`
+	Email          string    `json:"email" db:"email"`
+	RoleId         int       `json:"roleId" db:"role_id"`
+	ProfilePicture string    `json:"profilePicture" db:"profile_picture"`
 }
 
 type RoleUpdate struct {
@@ -23,16 +24,18 @@ type RoleUpdate struct {
 }
 
 type EditProfile struct {
-	Id         uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
-	Username   string    `json:"username" db:"username" validate:"required,lte=32"`
-	IsVerified bool      `db:"is_verified"`
+	Id             uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
+	Username       string    `json:"username" db:"username" validate:"required,lte=32"`
+	ProfilePicture string    `json:"profilePicture" db:"profile_picture"`
+	IsVerified     bool      `db:"is_verified"`
 }
 
 func UserToProfile(user entity.User) Profile {
 	return Profile{
-		Id:       user.Id,
-		Username: user.Username,
-		Email:    user.Email,
-		RoleId:   user.RoleId,
+		Id:             user.Id,
+		Username:       user.Username,
+		Email:          user.Email,
+		RoleId:         user.RoleId,
+		ProfilePicture: user.ProfilePicture,
 	}
 }

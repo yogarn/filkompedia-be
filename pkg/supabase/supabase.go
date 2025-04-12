@@ -3,12 +3,12 @@ package supabase
 import (
 	"fmt"
 	"mime/multipart"
-	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/google/uuid"
 	storage_go "github.com/supabase-community/storage-go"
+	"github.com/yogarn/filkompedia-be/model"
 )
 
 type Supabase struct {
@@ -35,15 +35,11 @@ func (s Supabase) UploadFile(file *multipart.FileHeader, dir string) (string, er
 	}
 	defer src.Close()
 
-	buffer := make([]byte, 512)
-	_, err = src.Read(buffer)
+	path := dir + "/" + uuid.NewString() + filepath.Ext(file.Filename)
+	contentType, err := model.GetImageType(file)
 	if err != nil {
 		return "", err
 	}
-
-	contentType := http.DetectContentType(buffer)
-
-	path := dir + "/" + uuid.NewString() + filepath.Ext(file.Filename)
 
 	_, err = s.client.UploadFile(
 		os.Getenv("SUPABASE_BUCKET_NAME"),

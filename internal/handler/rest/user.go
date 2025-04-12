@@ -127,7 +127,7 @@ func (r *Rest) UploadProfilePicture(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	profilePicture := model.ProfilePicture{File: file}
+	profilePicture := model.Image{File: file}
 	if err := r.validator.Struct(profilePicture); err != nil {
 		return &response.BadRequest
 	}

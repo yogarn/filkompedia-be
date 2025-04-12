@@ -2,10 +2,10 @@ package validator
 
 import (
 	"mime/multipart"
-	"net/http"
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/yogarn/filkompedia-be/model"
 )
 
 func RegisterValidator(v *validator.Validate) {
@@ -25,19 +25,11 @@ func ImageType(fl validator.FieldLevel) bool {
 		return false
 	}
 
-	file, err := fileHeader.Open()
-	if err != nil {
-		return false
-	}
-	defer file.Close()
-
-	buffer := make([]byte, 512)
-	_, err = file.Read(buffer)
+	mimeType, err := model.GetImageType(&fileHeader)
 	if err != nil {
 		return false
 	}
 
-	mimeType := http.DetectContentType(buffer)
 	allowedTypes := map[string]bool{
 		"image/jpeg": true,
 		"image/png":  true,

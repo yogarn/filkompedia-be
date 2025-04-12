@@ -101,7 +101,7 @@ func (r *Rest) UploadBookCover(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	bookCover := model.BookCover{File: file}
+	bookCover := model.Image{File: file}
 	if err := r.validator.Struct(bookCover); err != nil {
 		return &response.BadRequest
 	}

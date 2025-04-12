@@ -53,6 +53,7 @@ func mountBook(routerGroup fiber.Router, r *Rest) {
 	books.Post("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.CreateBook)
 	books.Patch("/", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.EditBook)
 	books.Delete("/:id", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.DeleteBook)
+	books.Post("/cover", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.UploadBookCover)
 }
 
 func mountComment(routerGroup fiber.Router, r *Rest) {

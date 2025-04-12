@@ -94,3 +94,23 @@ func (r *Rest) EditBook(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) UploadBookCover(ctx *fiber.Ctx) error {
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return err
+	}
+
+	bookCover := model.BookCover{File: file}
+	if err := r.validator.Struct(bookCover); err != nil {
+		return &response.BadRequest
+	}
+
+	url, err := r.service.BookService.UploadBookCover(file)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", url)
+	return nil
+}

@@ -1,11 +1,14 @@
 package service
 
 import (
+	"mime/multipart"
+
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/response"
+	"github.com/yogarn/filkompedia-be/pkg/supabase"
 )
 
 type IBookService interface {
@@ -14,19 +17,22 @@ type IBookService interface {
 	CreateBook(create *model.CreateBook) error
 	DeleteBook(bookId uuid.UUID) error
 	EditBook(edit model.EditBook) error
+	UploadBookCover(file *multipart.FileHeader) (string, error)
 }
 
 type BookService struct {
 	bookRepo    repository.IBookRepository
 	cartRepo    repository.ICartRepository
 	commentRepo repository.ICommentRepository
+	Supabase    supabase.ISupabase
 }
 
-func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository, commentRepo repository.ICommentRepository) IBookService {
+func NewBookService(bookRepo repository.IBookRepository, cartRepo repository.ICartRepository, commentRepo repository.ICommentRepository, Supabase supabase.ISupabase) IBookService {
 	return &BookService{
 		bookRepo:    bookRepo,
 		cartRepo:    cartRepo,
 		commentRepo: commentRepo,
+		Supabase:    Supabase,
 	}
 }
 
@@ -127,4 +133,9 @@ func (s *BookService) EditBook(edit model.EditBook) error {
 	}
 
 	return nil
+}
+
+func (s *BookService) UploadBookCover(file *multipart.FileHeader) (string, error) {
+	url, err := s.Supabase.UploadFile(file, "cover")
+	return url, err
 }

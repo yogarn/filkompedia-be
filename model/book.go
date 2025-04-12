@@ -1,6 +1,8 @@
 package model
 
 import (
+	"mime/multipart"
+
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 )
@@ -47,6 +49,10 @@ type EditBook struct {
 	Author       string    `json:"author" db:"author" validate:"omitempty,gte=5"`
 	ReleaseDate  string    `json:"release_date" db:"release_date" validate:"omitempty,rfc3339date"` //todo make a validator for date
 	Price        float64   `json:"price" db:"price" validate:"omitempty,min=1000"`
+}
+
+type BookCover struct {
+	File *multipart.FileHeader `form:"file" validate:"required,image_type,image_size"`
 }
 
 func BookToBookResponse(book entity.Book) BookResponse {

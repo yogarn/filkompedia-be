@@ -43,6 +43,7 @@ func mountUser(routerGroup fiber.Router, r *Rest) {
 	users.Put("/role", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.UpdateRole)
 	users.Patch("/", r.middleware.Authenticate, r.EditProfile)
 	users.Delete("/:userId", r.middleware.Authenticate, r.middleware.Authorize([]int{1}), r.DeleteUser)
+	users.Post("/picture", r.middleware.Authenticate, r.UploadProfilePicture)
 }
 
 func mountBook(routerGroup fiber.Router, r *Rest) {

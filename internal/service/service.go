@@ -6,6 +6,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/jwt"
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
+	"github.com/yogarn/filkompedia-be/pkg/supabase"
 )
 
 type Service struct {
@@ -18,9 +19,9 @@ type Service struct {
 	PaymentService  IPaymentService
 }
 
-func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient, midtrans midtrans.IMidtrans) *Service {
+func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jwt.IJwt, smtp *smtp.SMTPClient, midtrans midtrans.IMidtrans, supabase supabase.ISupabase) *Service {
 	return &Service{
-		UserService:     NewUserService(repository.UserRepository, repository.CartRepository, repository.PaymentRepository, repository.AuthRepository, repository.CheckoutRepository, repository.CommentRepository),
+		UserService:     NewUserService(repository.UserRepository, repository.CartRepository, repository.PaymentRepository, repository.AuthRepository, repository.CheckoutRepository, repository.CommentRepository, supabase),
 		AuthService:     NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt, smtp),
 		BookService:     NewBookService(repository.BookRepository, repository.CartRepository, repository.CommentRepository),
 		CartService:     NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),

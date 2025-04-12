@@ -1,10 +1,13 @@
 package service
 
 import (
+	"mime/multipart"
+
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
+	"github.com/yogarn/filkompedia-be/pkg/supabase"
 )
 
 type IUserService interface {
@@ -14,6 +17,7 @@ type IUserService interface {
 	UpdateRole(userProfile *model.RoleUpdate) error
 	EditProfile(edit *model.EditProfile) error
 	DeleteUser(userId uuid.UUID) error
+	UploadProfilePicture(file *multipart.FileHeader) (string, error)
 }
 
 type UserService struct {
@@ -23,9 +27,10 @@ type UserService struct {
 	AuthRepository     repository.IAuthRepository
 	CheckoutRepository repository.ICheckoutRepository
 	CommentRepository  repository.ICommentRepository
+	Supabase           supabase.ISupabase
 }
 
-func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository, authRepository repository.IAuthRepository, checkoutRepository repository.ICheckoutRepository, CommentRepository repository.ICommentRepository) IUserService {
+func NewUserService(userRepository repository.IUserRepository, cartRepository repository.ICartRepository, paymentRepository repository.IPaymentRepository, authRepository repository.IAuthRepository, checkoutRepository repository.ICheckoutRepository, CommentRepository repository.ICommentRepository, Supabase supabase.ISupabase) IUserService {
 	return &UserService{
 		UserRepository:     userRepository,
 		CartRepository:     cartRepository,
@@ -33,6 +38,7 @@ func NewUserService(userRepository repository.IUserRepository, cartRepository re
 		AuthRepository:     authRepository,
 		CheckoutRepository: checkoutRepository,
 		CommentRepository:  CommentRepository,
+		Supabase:           Supabase,
 	}
 }
 
@@ -134,4 +140,9 @@ func (s *UserService) DeleteUser(userId uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func (s *UserService) UploadProfilePicture(file *multipart.FileHeader) (string, error) {
+	url, err := s.Supabase.UploadFile(file, "profile")
+	return url, err
 }

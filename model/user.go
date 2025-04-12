@@ -1,6 +1,8 @@
 package model
 
 import (
+	"mime/multipart"
+
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 )
@@ -26,6 +28,10 @@ type EditProfile struct {
 	Id         uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
 	Username   string    `json:"username" db:"username" validate:"required,lte=32"`
 	IsVerified bool      `db:"is_verified"`
+}
+
+type ProfilePicture struct {
+	File *multipart.FileHeader `form:"file" validate:"required,image_type,image_size"`
 }
 
 func UserToProfile(user entity.User) Profile {

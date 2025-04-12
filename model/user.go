@@ -26,7 +26,7 @@ type RoleUpdate struct {
 type EditProfile struct {
 	Id             uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
 	Username       string    `json:"username" db:"username" validate:"required,lte=32"`
-	ProfilePicture string    `json:"profilePicture" db:"profile_picture"`
+	ProfilePicture string    `json:"profilePicture" db:"profile_picture" validate:"url"`
 	IsVerified     bool      `db:"is_verified"`
 }
 

@@ -23,7 +23,7 @@ func NewService(repository *repository.Repository, bcrypt bcrypt.IBcrypt, jwt jw
 	return &Service{
 		UserService:     NewUserService(repository.UserRepository, repository.CartRepository, repository.PaymentRepository, repository.AuthRepository, repository.CheckoutRepository, repository.CommentRepository, supabase),
 		AuthService:     NewAuthService(repository.AuthRepository, repository.UserRepository, bcrypt, jwt, smtp),
-		BookService:     NewBookService(repository.BookRepository, repository.CartRepository, repository.CommentRepository),
+		BookService:     NewBookService(repository.BookRepository, repository.CartRepository, repository.CommentRepository, supabase),
 		CartService:     NewCartService(repository.CartRepository, repository.UserRepository, repository.BookRepository),
 		CommentService:  NewCommentService(repository.CommentRepository, repository.UserRepository),
 		CheckoutService: NewCheckoutService(repository.CheckoutRepository, repository.CartRepository, repository.BookRepository, repository.UserRepository),

@@ -120,3 +120,23 @@ func (r *Rest) DeleteUser(ctx *fiber.Ctx) error {
 	response.Success(ctx, http.StatusOK, "success", nil)
 	return nil
 }
+
+func (r *Rest) UploadProfilePicture(ctx *fiber.Ctx) error {
+	file, err := ctx.FormFile("file")
+	if err != nil {
+		return err
+	}
+
+	profilePicture := model.ProfilePicture{File: file}
+	if err := r.validator.Struct(profilePicture); err != nil {
+		return &response.BadRequest
+	}
+
+	url, err := r.service.UserService.UploadProfilePicture(file)
+	if err != nil {
+		return err
+	}
+
+	response.Success(ctx, http.StatusOK, "success", url)
+	return nil
+}

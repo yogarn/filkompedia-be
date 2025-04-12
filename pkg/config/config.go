@@ -20,6 +20,7 @@ import (
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
 	monitoring "github.com/yogarn/filkompedia-be/pkg/prometheus"
 	"github.com/yogarn/filkompedia-be/pkg/smtp"
+	"github.com/yogarn/filkompedia-be/pkg/supabase"
 	val "github.com/yogarn/filkompedia-be/pkg/validator"
 )
 
@@ -42,12 +43,13 @@ func StartUp(config *Config) {
 	midtrans := midtrans.NewMidtrans()
 	promMetrics := monitoring.Start()
 	logrus := logger.SetupLogger()
+	supabase := supabase.New()
 
 	validator := validator.New()
 	val.RegisterValidator(validator)
 
 	repository := repository.NewRepository(config.DB, config.Redis)
-	service := service.NewService(repository, bcrypt, jwt, smtp, midtrans)
+	service := service.NewService(repository, bcrypt, jwt, smtp, midtrans, supabase)
 
 	middleware := middleware.Init(jwt, service, promMetrics, logrus)
 

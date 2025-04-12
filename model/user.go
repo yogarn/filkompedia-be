@@ -27,7 +27,6 @@ type EditProfile struct {
 	Id             uuid.UUID `json:"id" db:"id" validate:"required,uuid"`
 	Username       string    `json:"username" db:"username" validate:"omitempty,lte=32"`
 	ProfilePicture string    `json:"profilePicture" db:"profile_picture" validate:"omitempty,url"`
-	IsVerified     bool      `db:"is_verified"`
 }
 
 func UserToProfile(user entity.User) Profile {

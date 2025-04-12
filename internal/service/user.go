@@ -96,6 +96,10 @@ func (s *UserService) EditProfile(edit *model.EditProfile) error {
 		edit.Username = user.Username
 	}
 
+	if edit.ProfilePicture == "" {
+		edit.ProfilePicture = user.ProfilePicture
+	}
+
 	if err := s.UserRepository.EditUser(edit); err != nil {
 		return err
 	}

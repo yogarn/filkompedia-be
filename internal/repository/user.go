@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -59,6 +60,8 @@ func (r *UserRepository) GetUserByEmail(email string) (user *entity.User, err er
 	user = &entity.User{}
 	err = r.db.Get(user, query, email)
 
+	fmt.Println(err)
+
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, &response.UserNotFound
 	}
@@ -89,7 +92,8 @@ func (r *UserRepository) UpdateRole(userId uuid.UUID, roleId int) error {
 func (r *UserRepository) EditUser(edit *model.EditProfile) error {
 	query := `
 		UPDATE users 
-		SET username = :username
+		SET username = :username,
+			profile_picture = :profile_picture
 		WHERE id = :id
 	`
 

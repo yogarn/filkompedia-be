@@ -7,6 +7,7 @@ import (
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type ICommentService interface {
@@ -109,5 +110,21 @@ func (s *CommentService) UpdateComment(commentReq *model.UpdateComment, userId u
 }
 
 func (s *CommentService) DeleteComment(id uuid.UUID, userId uuid.UUID) error {
-	return s.commentRepository.DeleteComment(id, userId)
+	var user entity.User
+
+	err := s.userRepository.GetUser(&user, userId)
+	if err != nil {
+		return err
+	}
+
+	comment, err := s.GetComment(id)
+	if err != nil {
+		return err
+	}
+
+	if comment.UserId != userId && user.RoleId != 1 {
+		return &response.RoleUnauthorized
+	}
+
+	return s.commentRepository.DeleteComment(id)
 }

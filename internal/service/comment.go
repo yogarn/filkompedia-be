@@ -42,13 +42,14 @@ func (s *CommentService) GetComment(id uuid.UUID) (*model.CommentRes, error) {
 	}
 
 	return &model.CommentRes{
-		Id:        comment.Id,
-		UserId:    comment.UserId,
-		Username:  user.Username,
-		BookId:    comment.BookId,
-		Comment:   comment.Comment,
-		Rating:    comment.Rating,
-		CreatedAt: comment.CreatedAt,
+		Id:             comment.Id,
+		UserId:         comment.UserId,
+		Username:       user.Username,
+		ProfilePicture: user.ProfilePicture,
+		BookId:         comment.BookId,
+		Comment:        comment.Comment,
+		Rating:         comment.Rating,
+		CreatedAt:      comment.CreatedAt,
 	}, nil
 }
 
@@ -67,13 +68,14 @@ func (s *CommentService) GetCommentByBook(bookId uuid.UUID) (*[]model.CommentRes
 		}
 
 		commentResponses = append(commentResponses, model.CommentRes{
-			Id:        comment.Id,
-			UserId:    comment.UserId,
-			Username:  user.Username,
-			BookId:    comment.BookId,
-			Comment:   comment.Comment,
-			Rating:    comment.Rating,
-			CreatedAt: comment.CreatedAt,
+			Id:             comment.Id,
+			UserId:         comment.UserId,
+			Username:       user.Username,
+			ProfilePicture: user.ProfilePicture,
+			BookId:         comment.BookId,
+			Comment:        comment.Comment,
+			Rating:         comment.Rating,
+			CreatedAt:      comment.CreatedAt,
 		})
 	}
 

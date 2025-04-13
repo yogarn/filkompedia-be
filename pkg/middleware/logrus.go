@@ -12,8 +12,15 @@ import (
 func (m *middleware) LogrusMiddleware(ctx *fiber.Ctx) error {
 	start := ctx.Context().Time()
 
-	rawBody := string(ctx.Body())
-	sanitizedBody := sanitizeBody(rawBody)
+	contentType := ctx.Get("Content-Type")
+
+	var sanitizedBody string
+	if strings.HasPrefix(contentType, "multipart/form-data") {
+		sanitizedBody = "[skipped multipart body]"
+	} else {
+		rawBody := string(ctx.Body())
+		sanitizedBody = sanitizeBody(rawBody)
+	}
 
 	err := ctx.Next()
 	statusCode, _ := response.GetErrorInfo(err)

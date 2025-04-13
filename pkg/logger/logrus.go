@@ -11,7 +11,7 @@ func SetupLogger() *logrus.Logger {
 
 	logger.SetOutput(&lumberjack.Logger{
 		Filename:   "logs/app.log",
-		MaxSize:    10,
+		MaxSize:    1,
 		MaxAge:     7,
 		MaxBackups: 5,
 		Compress:   true,

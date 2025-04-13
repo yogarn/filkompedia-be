@@ -11,6 +11,7 @@ import (
 type IMiddleware interface {
 	Authenticate(ctx *fiber.Ctx) error
 	Authorize(roles []int) fiber.Handler
+	AuthorizeOrItself(roles []int) fiber.Handler
 	PromMiddleware(ctx *fiber.Ctx) error
 	LogrusMiddleware(ctx *fiber.Ctx) error
 	BookCommentCheck(ctx *fiber.Ctx) error

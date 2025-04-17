@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
@@ -57,7 +56,6 @@ func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount 
 
 	var cart entity.Cart
 	if err := r.doesCartExist(&cart, user.Id, book.Id); err != nil && !errors.Is(err, sql.ErrNoRows) {
-		fmt.Println(err)
 		return err
 	}
 

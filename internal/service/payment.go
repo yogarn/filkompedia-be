@@ -13,6 +13,7 @@ import (
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
 	"github.com/yogarn/filkompedia-be/pkg/midtrans"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type IPaymentService interface {
@@ -88,7 +89,7 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 func (s *PaymentService) UpdatePaymentStatus(PaymentDetails map[string]any) error {
 	paymentIDs, ok := PaymentDetails["order_id"].(string)
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
 	paymentId, err := uuid.Parse(paymentIDs)
@@ -102,62 +103,66 @@ func (s *PaymentService) UpdatePaymentStatus(PaymentDetails map[string]any) erro
 
 	statusCode, ok := PaymentDetails["status_code"].(string)
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
 	grossAmount, ok := PaymentDetails["gross_amount"].(string)
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
 	serverKey := os.Getenv("MIDTRANS_SERVER_KEY")
 
 	signatureKey, ok := PaymentDetails["signature_key"].(string)
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
 	hash := sha512.New()
 	hash.Write([]byte(paymentIDs + statusCode + grossAmount + serverKey))
 	verify := hex.EncodeToString(hash.Sum(nil))
-
 	if signatureKey != verify {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
-	//todo improve this
 	status, ok := PaymentDetails["transaction_status"]
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
 	fraud, ok := PaymentDetails["fraud_status"]
 	if !ok {
-		return errors.New("invalid payment details")
+		return &response.BadRequest
 	}
 
-	if status == "capture" {
-		if fraud == "challenge" {
+	switch status {
+	case "capture":
+		switch fraud {
+		case "challenge":
 			if err := s.paymentRepo.UpdatePaymentStatus(4, paymentId); err != nil {
 				return err
 			}
-		} else if fraud == "accept" {
+		case "accept":
 			if err := s.paymentRepo.UpdatePaymentStatus(1, paymentId); err != nil {
 				return err
 			}
+		default:
+			return &response.BadRequest
 		}
-	} else if status == "settlement" {
+	case "settlement":
 		if err := s.paymentRepo.UpdatePaymentStatus(5, paymentId); err != nil {
 			return err
 		}
-	} else if status == "deny" {
+	case "deny":
 		if err := s.paymentRepo.UpdatePaymentStatus(2, paymentId); err != nil {
 			return err
 		}
-	} else if status == "cancel" || status == "expire" {
+	case "cancel", "expire":
 		if err := s.paymentRepo.UpdatePaymentStatus(3, paymentId); err != nil {
 			return err
 		}
+	default:
+		return &response.BadRequest
 	}
 
 	return nil

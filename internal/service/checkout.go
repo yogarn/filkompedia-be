@@ -1,12 +1,11 @@
 package service
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 	"github.com/yogarn/filkompedia-be/entity"
 	"github.com/yogarn/filkompedia-be/internal/repository"
 	"github.com/yogarn/filkompedia-be/model"
+	"github.com/yogarn/filkompedia-be/pkg/response"
 )
 
 type ICheckoutService interface {
@@ -62,7 +61,7 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, userId uui
 		}
 
 		if cart.CheckoutId != uuid.Nil {
-			return 0, errors.New("invalid input at " + cart_id.String() + " where it's already being checked out")
+			return 0, &response.BadRequest
 		}
 
 		var book entity.Book
@@ -71,7 +70,7 @@ func (s *CheckoutService) Checkout(checkoutReq model.CheckoutRequest, userId uui
 		}
 
 		if cart.UserId != userId {
-			return 0, errors.New("invalid input at " + cart_id.String() + " where it's not belong to the user")
+			return 0, &response.BadRequest
 		}
 
 		totalPrice += (float64(cart.Amount) * book.Price)

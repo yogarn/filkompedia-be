@@ -51,7 +51,7 @@ func (r *CartRepository) GetCart(cart *entity.Cart, cartId uuid.UUID) error {
 
 func (r *CartRepository) AddToCart(user *entity.User, book *entity.Book, amount int) error {
 	if amount < 1 {
-		return errors.New("invalid amount")
+		return &response.BadRequest
 	}
 
 	var cart entity.Cart
@@ -102,7 +102,7 @@ func (r *CartRepository) RemoveFromCart(cartId uuid.UUID) error {
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("no rows deleted")
+		return &response.CartNotFound
 	}
 
 	return nil

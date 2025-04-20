@@ -71,7 +71,7 @@ func (j *jwt) ValidateToken(tokenString string) (uuid.UUID, error) {
 	}
 
 	if !token.Valid {
-		return userId, errors.New("invalid token")
+		return userId, &response.InvalidToken
 	}
 
 	userId = claim.UserId

@@ -3,7 +3,6 @@ package service
 import (
 	"crypto/sha512"
 	"encoding/hex"
-	"errors"
 	"os"
 	"time"
 
@@ -60,10 +59,6 @@ func (s *PaymentService) CreatePayment(userId uuid.UUID, checkoutId uuid.UUID, t
 	snapRes, err := s.midtrans.NewTransactionToken(paymentId.String(), int64(totalPrice), &user)
 	if err != nil {
 		return nil, err
-	}
-
-	if snapRes == nil {
-		return nil, errors.New("nil response")
 	}
 
 	token, err := uuid.Parse(snapRes.Token)

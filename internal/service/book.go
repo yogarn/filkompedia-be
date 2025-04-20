@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"mime/multipart"
 
 	"github.com/google/uuid"
@@ -88,7 +89,7 @@ func (s *BookService) DeleteBook(bookId uuid.UUID) error {
 	}
 
 	err := s.cartRepo.DeleteCartByBook(bookId)
-	if err != nil && err != &response.CartNotFound {
+	if err != nil && errors.Is(err, &response.CartNotFound) {
 		return err
 	}
 
